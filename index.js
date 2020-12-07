@@ -65,7 +65,6 @@ module.exports = {
             console: 'Console',
             edition: 'Edition',
             watcher: 'Watcher',
-            tags: 'MasterPage',
             metaProps: 'MetaProps',
             name: 'Watcher',            //用于监控完成后提示项目的名称。
             less: 'LessLink',
@@ -88,6 +87,10 @@ module.exports = {
                 regexp: 'HtmlLink',
                 changeDelay:'HtmlLink',
                 minify: 'Html',
+            },
+
+            tags: function (value) {
+                Defaults.set('WebSite', { 'tags': value, });
             },
 
             packages: function (value) {
