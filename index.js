@@ -90,7 +90,7 @@ module.exports = {
             },
 
             tags: function (value) {
-                Defaults.set('WebSite', { 'tags': value, });
+                Defaults.set('MasterPage', { 'tags': value, });
             },
 
             packages: function (value) {
