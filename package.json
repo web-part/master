@@ -1,6 +1,6 @@
 {
   "name": "@webpart/master",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -27,7 +27,7 @@
     "@definejs/string": "^1.0.0",
     "@definejs/tasker": "^1.0.0",
     "@definejs/timer": "^1.0.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "1.0.0-rc.3",
     "colors": "^1.4.0",
     "gaze": "^1.1.3",
     "html-minifier": "^4.0.0",
