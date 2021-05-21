@@ -8,6 +8,7 @@
 *   ('compile', 'js-block'); //合并完成后、压缩之前，要对 js 内容进行转码的函数(如 babel 转码)。
 */
 define('Package', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Tasker = require('@definejs/tasker');
     const Query = require('@definejs/query');
     const $Object = require('@definejs/object');

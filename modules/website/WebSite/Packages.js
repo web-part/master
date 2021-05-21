@@ -1,6 +1,7 @@
 
 
 define('WebSite/Packages', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Directory = require('@definejs/directory');
     const File = require('@definejs/file');
 

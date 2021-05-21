@@ -2,6 +2,7 @@
 * 动态批量引用 less 资源文件。
 */
 define('LessBlock', function (require, module, exports) {
+    const console = require('@webpart/console');
     const File = require('@definejs/file');
     const Emitter = require('@definejs/emitter');
     const $String = require('@definejs/string');

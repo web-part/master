@@ -3,6 +3,7 @@
 * 
 */
 define('MasterPage/LessLinks', function (require, module, exports) {
+    const console = require('@webpart/console');
     const $String = require('@definejs/string');
     const File = require('@definejs/file');
     const Tasker = require('@definejs/tasker');

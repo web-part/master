@@ -3,6 +3,7 @@
 * 
 */
 define('MasterPage/JsBlocks', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Lines = require('Lines');
     const BlockList = require('BlockList');
     const JsBlock = require('JsBlock');

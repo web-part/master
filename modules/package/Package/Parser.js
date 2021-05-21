@@ -3,6 +3,7 @@
 * 
 */
 define('Package/Parser', function (require, module, exports) {
+    const console = require('@webpart/console');
     const File = require('@definejs/file');
 
     const Path = require('Path');

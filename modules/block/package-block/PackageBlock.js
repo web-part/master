@@ -6,6 +6,7 @@
 *   ('compile', 'each', 'done');
 */
 define('PackageBlock', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Emitter = require('@definejs/emitter');
     const Tasker = require('@definejs/tasker');
     const File = require('@definejs/file');

@@ -11,6 +11,7 @@
 *   ('build', 'master', 'all');
 */
 define('MasterBlock', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Emitter = require('@definejs/emitter');
     const Tasker = require('@definejs/tasker');
 

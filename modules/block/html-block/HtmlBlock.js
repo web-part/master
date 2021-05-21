@@ -3,6 +3,7 @@
 * 动态引用 html 资源文件。
 */
 define('HtmlBlock', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Emitter = require('@definejs/emitter');
     const $String = require('@definejs/string');
     const MD5 = require('@definejs/md5');

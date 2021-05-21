@@ -3,6 +3,7 @@
 * 
 */
 define('PackageBlock/Parser', function (require, module, exports) {
+    const console = require('@webpart/console');
     const $Object = require('@definejs/object');
     const Patterns = require('@definejs/patterns');
     

@@ -3,6 +3,7 @@
 * 验证器。
 */
 define('MasterPage/Validater', function (require, module, exports) {
+    const console = require('@webpart/console');
     const $Object = require('@definejs/object');
     
     const Lines = require('Lines');

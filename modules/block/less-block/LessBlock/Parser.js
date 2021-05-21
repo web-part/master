@@ -2,6 +2,7 @@
 * 
 */
 define('LessBlock/Parser', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Patterns = require('@definejs/patterns');
     const File = require('@definejs/file');
     

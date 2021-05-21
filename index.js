@@ -1,6 +1,7 @@
 
 require('colors');
 
+const console = require('@webpart/console');
 const File = require('@definejs/file');
 const Emitter = require('@definejs/emitter');
 const Timer = require('@definejs/timer');
@@ -20,13 +21,8 @@ App.modules = [
 
 function init() { 
     const WebSite = App.require('WebSite');
-    const Console = App.require('Console');
 
     let website = new WebSite();
-
-    //重写原生的，以让它同时具有输出到文件的功能。
-    console.log = Console.log;
-    console.error = Console.error;
 
     //先让外界有机会提前绑定事件。
     emitter.fire('init', [website]);
@@ -62,7 +58,6 @@ module.exports = {
 
         Defaults.config(defaults, { //映射转换规则（路由规则）。
             htdocs: 'WebSite',
-            console: 'Console',
             edition: 'Edition',
             watcher: 'Watcher',
             metaProps: 'MetaProps',

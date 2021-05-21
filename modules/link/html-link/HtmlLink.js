@@ -2,6 +2,7 @@
 * 静态引用 html 片段资源文件。
 */
 define('HtmlLink', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Emitter = require('@definejs/emitter');
     const File = require('@definejs/file');
     const Lines = require('@definejs/lines');

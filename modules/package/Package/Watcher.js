@@ -3,6 +3,7 @@
 * 
 */
 define('Package/Watcher', function (require, module, exports) {
+    const console = require('@webpart/console');
     const $Object = require('@definejs/object');
     
     const Watcher = require('Watcher');

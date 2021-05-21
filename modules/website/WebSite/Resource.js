@@ -3,6 +3,7 @@
 * 
 */
 define('WebSite/Resource', function (require, module, exports) {
+    const console = require('@webpart/console');
     const File = require('@definejs/file');
     const Patterns = require('@definejs/patterns');
     const Directory = require('@definejs/directory');

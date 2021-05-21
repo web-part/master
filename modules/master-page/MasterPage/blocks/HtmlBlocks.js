@@ -3,6 +3,7 @@
 * 
 */
 define('MasterPage/HtmlBlocks', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Path = require('Path');
     const Lines = require('Lines');
     const BlockList = require('BlockList');

@@ -3,6 +3,7 @@
 * 
 */
 define('WebSite/Masters', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Log = require('Log');
     const Watcher = require('Watcher');
     const MasterBlock = require('MasterBlock');

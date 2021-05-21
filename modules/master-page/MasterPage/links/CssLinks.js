@@ -3,6 +3,7 @@
 * 
 */
 define('MasterPage/CssLinks', function (require, module, exports) {
+    const console = require('@webpart/console');
     const File = require('@definejs/file');
     const Tasker = require('@definejs/tasker');
     

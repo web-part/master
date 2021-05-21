@@ -3,6 +3,7 @@
 * 
 */
 define('MasterPage/LessBlocks', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Tasker = require('@definejs/tasker');
     
     const Lines = require('Lines');

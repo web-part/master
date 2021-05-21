@@ -3,6 +3,7 @@
 * 获取块中的路径模式列表。
 */
 define('BlockList/Patterns', function (require, module, exports) {
+    const console = require('@webpart/console');
     const Lines = require('Lines');
 
 
