@@ -4,9 +4,9 @@
 */
 define('MasterPage/Meta', function (require, module, exports) {
     const $String = require('@definejs/string');
-
     const Path = require('Path');
     const Watcher = require('Watcher');
+    const ID = require('ID');
 
 
     return {
@@ -20,6 +20,7 @@ define('MasterPage/Meta', function (require, module, exports) {
             let name = Path.base(file);     //如 `index.master`。
             let excludes = config.excludes || {};   //需要排除的模式。
             let tid = null;                 //针对 meta.mix() 中的。
+            let id = ID.next(module.parent.id);
 
             name = Path.base(name);         //如 `index`。
             dest = dir + dest;              //如 `htdocs/test/{name}.html`。
@@ -27,7 +28,7 @@ define('MasterPage/Meta', function (require, module, exports) {
 
 
             let meta = {
-                'id': $String.random(),     //实例 id。
+                'id': id,                   //实例 id。
                 'name': name,               //短名称。
                 'file': file,               //当前母版页的文件路径。
                 'dir': dir,                 //当前母版页所在的目录。

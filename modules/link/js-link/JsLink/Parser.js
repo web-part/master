@@ -89,6 +89,36 @@ define('JsLink/Parser', function (require, module, exports) {
 
         },
 
+        toJSON(list) {
+
+            list = list.map((item) => {
+
+                let link = item.link.toJSON();
+
+                return {
+                    'no': item.no,              //所在的行号，从 0 开始。
+                    'href': item.href,          //原始地址。
+                    'external': item.external,  //是否为外部 js，即使用 `http://` 完整地址引用的外部 js 资源。
+                    'debug': item.debug,        //是否为 debug 版本。
+                    'min': item.min,            //是否为 min 版本。
+                    'ext': item.ext,            //后缀名，是 `.debug.js` 或 `.min.js` 或 `.js` 等。
+                    'file': item.file,          //完整的物理路径。
+                    'query': item.query,        //src 中的 query 串。
+                    'html': item.html,          //标签的 html 内容。
+                    'line': item.line,          //整一行的 html 内容。
+                    'tabs': item.tabs,          //前导空格数。
+                    'inline': item.inline,      //是否需要内联。
+                    'props': item.props,        //html 标签里的所有属性。
+                    'link': link,               //
+                };
+            });
+
+            return list;
+        },
+
+
+
+
     };
 
 });

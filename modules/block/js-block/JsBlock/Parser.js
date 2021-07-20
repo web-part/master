@@ -34,10 +34,10 @@ define('JsBlock/Parser', function (require, module, exports) {
                 let href = Path.relative(meta.dir, file);
 
                 return {
+                    'isOld': false,
                     'file': file,
                     'href': href,
                     'link': null,
-                    'isOld': false,
                 };
             });
 
@@ -108,6 +108,22 @@ define('JsBlock/Parser', function (require, module, exports) {
 
             return list;
 
+        },
+
+
+        toJSON(list) {
+            list = list.map((item) => {
+                let link = item.link.toJSON();
+
+                return {
+                    'isOld': item.isOld,
+                    'file': item.file,
+                    'href': item.href,
+                    'link': link,
+                };
+            });
+
+            return list;
         },
     };
 

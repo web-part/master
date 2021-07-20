@@ -114,6 +114,20 @@ define('MasterBlock/Parser', function (require, module, exports) {
 
         },
 
+        toJSON(list) {
+            list = list.map((item) => {
+                let master = item.master.toJSON();
+                
+                return {
+                    'isOld': item.isOld,
+                    'file': item.file,
+                    'master': master,
+                };
+            });
+            
+            return list;
+        },
+
 
     };
 

@@ -77,7 +77,7 @@ define('WebSite', function (require, module, exports) {
             //要从母版页中减去包中所引用的资源文件。
             let meta = mapper.get(this);
             let packages = meta.PackageBlock = Packages.parse(meta);
-            let excludes = packages ? packages.get('type$patterns') : [];
+            let excludes = packages ? packages.get('type$patterns') : {};
 
             meta.MasterBlock = Masters.parse(meta, {
                 'excludes': excludes,
@@ -205,6 +205,34 @@ define('WebSite', function (require, module, exports) {
 
             meta.emitter.destroy();
 
+        }
+
+        /**
+         * 获取整个网站的相关信息。
+         * 调用该方法之前，要确保先调用了 this.parse();
+         * @returns 
+         */
+        toJSON() {
+            let meta = mapper.get(this);
+            let masterBlock = meta.MasterBlock.toJSON();
+            let packageBlock = null;
+
+            //要使用了 `webpart watch -p` 命令才有该对象。
+            if (meta.PackageBlock) {
+                packageBlock = meta.PackageBlock.toJSON();
+            }
+
+            return {
+                'type': module.id,
+
+                'id': meta.id,
+                'htdocs': meta.htdocs,
+                'cwd': meta.cwd,
+                'css': meta.css,
+
+                'masterBlock': masterBlock,
+                'packageBlock': packageBlock,
+            };
         }
     }
 

@@ -255,6 +255,22 @@ define('Package', function (require, module, exports) {
 
             mapper.delete(this);
         }
+
+        toJSON() {
+            let meta = mapper.get(this);
+
+            return {
+                'type': module.id,
+                'id': meta.id,
+                'file': meta.file,
+                'htdocs': meta.htdocs,
+                'css': meta.css,
+                'dest': meta.dest,
+                'name': meta.name,
+                'dir': meta.dir,
+                'patterns': meta.patterns,
+            };
+        }
     }
 
 

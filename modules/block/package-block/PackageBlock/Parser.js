@@ -27,9 +27,9 @@ define('PackageBlock/Parser', function (require, module, exports) {
 
             let list = files.map((file) => {
                 return {
+                    'isOld': false,     //
                     'file': file,       //
                     'pack': null,       //Package 实例。
-                    'isOld': false,     //
                     'key$output': {},   //针对编译中不同的 options 的缓存结果。 key = JSON.string(options);
                     'output': null,     //缓存最近一次 pack.compile() 的编译结果。
                     'info': {},         //缓存 pack.parse() 的输出结果。
@@ -165,6 +165,20 @@ define('PackageBlock/Parser', function (require, module, exports) {
             return old != current;
 
 
+        },
+
+        toJSON(list) {
+            list = list.map((item) => {
+
+                let pack = item.pack.toJSON();
+                
+                return {
+                    'isOld': item.isOld,
+                    'file': item.file,
+                    'pack': pack,
+                };
+            });
+            return list;
         },
     };
 

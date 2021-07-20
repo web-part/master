@@ -71,6 +71,12 @@ define('MasterPage/HtmlLinks', function (require, module, exports) {
 
             });
         },
+       
+
+        toJSON(meta) {
+            let list = HtmlLink.toJSON(meta.HtmlLinks);
+            return list;
+        },
 
 
     };

@@ -241,6 +241,26 @@ define('HtmlLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
+
+
+        toJSON() {
+            let meta = mapper.get(this);
+            let list = Parser.toJSON(meta.list);
+
+            let json = {
+                'type': module.id,
+                'id': meta.id,
+                'parent': meta.parent ? meta.parent.id : '',
+                'file': meta.file,
+                'dir': meta.dir,
+                'content': meta.content,
+                'list': list,
+            };
+
+            return json;
+        }
+
+
         //静态方法。
         static parse({ file, content, regexp, }) {
             return Parser.parse({
@@ -251,6 +271,7 @@ define('HtmlLink', function (require, module, exports) {
         }
 
         static replaceTabs = Tabs.replace;
+        static toJSON = Parser.toJSON;
     }
 
     return HtmlLink;

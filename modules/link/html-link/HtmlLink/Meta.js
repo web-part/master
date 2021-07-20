@@ -18,7 +18,7 @@ define('HtmlLink/Meta', function (require, module, exports) {
                 'dir': '',                          //当前 html 片段页所在的目录，由下级模块 Parse 解析取得。
                 'content': content || '',           //当前 html 片段的内容。
                 'lines': [],                        //content 按行分裂的数组。
-                'list': [],                         //下级实例列表。
+                'list': [],                         //下级列表。 item = { no, file, ..., link, }; 具体字段见同级模块 Parser.js
                 'old': {                            //重新解析前对一些字段的备份。
                     'file$link': {},                //
                 },

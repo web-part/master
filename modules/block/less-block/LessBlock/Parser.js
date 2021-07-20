@@ -37,10 +37,10 @@ define('LessBlock/Parser', function (require, module, exports) {
 
 
                 return {
+                    'isOld': false,
                     'file': file,
                     'dest': dest,
                     'link': null,
-                    'isOld': false,
                 };
             });
 
@@ -91,6 +91,21 @@ define('LessBlock/Parser', function (require, module, exports) {
 
             return list;
 
+        },
+
+        toJSON(list) {
+            list = list.map((item) => {
+                let link = item.link.toJSON();
+
+                return {
+                    'isOld': item.isOld,
+                    'file': item.file,
+                    'dest': item.dest,
+                    'link': link,
+                };
+            });
+
+            return list;
         },
     };
 

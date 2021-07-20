@@ -144,6 +144,17 @@ define('CssLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+
+            return {
+                'type': module.id,
+                'id': meta.id,
+                'file': meta.file,
+                'external': meta.external,
+            };
+        }
+
 
         static parse(content, { dir, }) {
             return Parser.parse(content, {
@@ -153,6 +164,8 @@ define('CssLink', function (require, module, exports) {
         }
 
         static build = Builder.build;
+        static toJSON = Parser.toJSON;
+
     }
 
 

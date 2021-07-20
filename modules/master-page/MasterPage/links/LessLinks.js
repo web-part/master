@@ -213,6 +213,13 @@ define('MasterPage/LessLinks', function (require, module, exports) {
             tasker.parallel();
         },
 
+
+        toJSON(meta) {
+            let list = LessLink.toJSON(meta.LessLinks);
+            return list;
+        },
+
+
     };
 
 });

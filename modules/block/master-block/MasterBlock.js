@@ -240,6 +240,21 @@ define('MasterBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+            let list = Parser.toJSON(meta.list);
+
+            return {
+                'type': module.id,
+                'id': meta.id,
+                'patterns': meta.patterns,
+                // 'excludes': meta.excludes, //这个是透传给 MasterPage 的，不需要在这里展示。
+                'dest': meta.dest,
+                'list': list,
+            };
+
+        }
+
     }
 
 

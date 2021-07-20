@@ -2,8 +2,8 @@
 * 
 */
 define('PackageBlock/Meta', function (require, module, exports) {
-    const $String = require('@definejs/string');
     const Patterns = require('@definejs/patterns');
+    const ID = require('ID');
 
 
     return {
@@ -22,10 +22,10 @@ define('PackageBlock/Meta', function (require, module, exports) {
 
             patterns = Patterns.join(htdocs, patterns);
             
+            let id = ID.next(module.parent.id);
 
             let meta = {
-                'id': $String.random(),             //实例 id。
-              
+                'id': id,                           //实例 id。
                 'htdocs': htdocs,                   //网站的根目录。
                 'css': config.css,                  //样式目录，相对于网站根目录。
                 'patterns': patterns,               //路径模式。

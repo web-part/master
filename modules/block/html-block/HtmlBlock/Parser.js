@@ -31,9 +31,9 @@ define('HtmlBlock/Parser', function (require, module, exports) {
 
             let list = files.map((file) => {
                 return {
+                    'isOld': false,
                     'file': file,
                     'link': null,
-                    'isOld': false,
                 };
             });
 
@@ -84,6 +84,21 @@ define('HtmlBlock/Parser', function (require, module, exports) {
 
             return list;
 
+        },
+
+        toJSON(list) {
+            
+            list = list.map((item) => {
+                let link = item.link.toJSON();
+
+                return {
+                    'isOld': item.isOld,
+                    'file': item.file,
+                    'link': link,
+                };
+            });
+
+            return list;
         },
     };
 

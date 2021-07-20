@@ -4,8 +4,8 @@
 */
 define('Package/Meta', function (require, module, exports) {
     const console = require('@webpart/console');
-    const $String = require('@definejs/string');
     const File = require('@definejs/file');
+    const ID = require('ID');
 
 
 
@@ -14,9 +14,10 @@ define('Package/Meta', function (require, module, exports) {
         * 
         */
         create(config, others) {
-            
+            let id = ID.next(module.parent.id);
+
             let meta = {
-                'id': $String.random(),     //实例 id。
+                'id': id,                   //实例 id。
                 'file': config.file,        //包文件路径。
                 'htdocs': config.htdocs,    //网站的根目录。
                 'css': config.css,          //输出的样式的目录，相对于网站根目录。

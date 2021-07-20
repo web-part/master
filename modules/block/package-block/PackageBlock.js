@@ -203,6 +203,23 @@ define('PackageBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+            let list = Parser.toJSON(meta.list);
+
+            return {
+                'type': module.id,
+                'id': meta.id,                           //实例 id。
+                'htdocs': meta.htdocs,                   //网站的根目录。
+                'css': meta.css,                  //样式目录，相对于网站根目录。
+                'patterns': meta.patterns,               //路径模式。
+                'dest': meta.dest,
+                'type$patterns': meta.type$patterns,
+                'list': list,
+            };
+
+        }
+
     }
 
     return PackageBlock;

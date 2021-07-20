@@ -39,6 +39,7 @@ define('BlockList', function (require, module, exports) {
 
                 start = item.begin + 1;
 
+                //增加一个字段。
                 if (type == 'patterns') {
                     item.patterns = Patterns.get(item.lines);
                 }

@@ -277,6 +277,22 @@ define('JsBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+            let list = Parser.toJSON(meta.list);
+
+            let json = {
+                'type': module.id,
+                'id': meta.id,
+                'dir': meta.dir,
+                'patterns': meta.patterns,
+                'excludes': meta.excludes,
+                'list': list,
+            };
+
+            return json;
+        }
+
     }
 
 

@@ -18,31 +18,36 @@ App.modules = [
 ];
 
 
-
-function init() { 
-    const WebSite = App.require('WebSite');
-
-    let website = new WebSite();
-
-    //先让外界有机会提前绑定事件。
-    emitter.fire('init', [website]);
-
-    return website;
-}
+let website = null;
 
 
+module.exports = exports = {
 
-
-module.exports = {
     /**
     * 
     */
     require: App.require,
 
+    
     /**
     * 
     */
     on: emitter.on.bind(emitter),
+
+    /**
+    * 初始化一个网站实例。
+    * 会触发 `init` 事件。
+    * @returns {WebSite} 返回一个 WebSite 实例。 
+    */
+    init() {
+        if (!website) {
+            const WebSite = App.require('WebSite');
+            website = new WebSite();
+            emitter.fire('init', [website]);  //先让外界有机会提前绑定事件。
+        }
+
+        return website;
+    },
 
     /**
     * 设置默认配置。
@@ -101,12 +106,13 @@ module.exports = {
 
     },
 
+
     /**
     * 编译并在完成后开始监控。
     * 该方法仅用于开发阶段。
     */
     watch(options) {
-        let website = init();
+        let website = exports.init();
         let timer = new Timer();
 
         timer.start();
@@ -116,7 +122,7 @@ module.exports = {
             let info = timer.stop('ms');
             console.log('耗时'.gray, info.value.toString().cyan, 'ms');
            
-            emitter.fire('done', []);
+            emitter.fire('done', 'watch', [website]);
         });
 
 
@@ -129,7 +135,7 @@ module.exports = {
     * 该方法仅用于发布到生产环境阶段。
     */
     build(options) {
-        let website = init();
+        let website = exports.init();
         let timer = new Timer();
 
         timer.start();
@@ -139,7 +145,7 @@ module.exports = {
             let info = timer.stop('ms');
             console.log('耗时'.gray, info.value.toString().cyan, 'ms');
 
-            emitter.fire('done', []);
+            emitter.fire('done', 'build', [website]);
         });
 
         //开始构建。

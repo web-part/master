@@ -163,6 +163,11 @@ define('MasterPage/CssLinks', function (require, module, exports) {
 
 
 
+        toJSON(meta) {
+            let list = CssLink.toJSON(meta.CssLinks);
+            return list;
+        },
+
 
     };
 

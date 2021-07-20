@@ -4,7 +4,6 @@
 */
 define('MasterBlock/Meta', function (require, module, exports) {
     const Patterns = require('@definejs/patterns');
-    
     const ID = require('ID');
 
 
@@ -21,11 +20,11 @@ define('MasterBlock/Meta', function (require, module, exports) {
 
             patterns = Patterns.join(htdocs, patterns);
             
+
             let id = ID.next(module.parent.id);
 
             let meta = {
                 'id': id,                           //实例 id。
-              
                 'htdocs': htdocs,                   //网站的根目录。
                 'css': config.css,                  //样式目录，相对于网站根目录。
                 'dest': config.dest,                //输出的目标页面的名称模板。

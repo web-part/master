@@ -208,6 +208,25 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
             tasker.parallel();
         },
 
+        toJSON(meta) {
+            let list = meta.LessBlocks.map(function (item) {
+                let block = item.block.toJSON();
+
+                //以下字段参照 `BlockList/Item` 模块。
+                return {
+                    'begin': item.begin,
+                    'end': item.end,
+                    'tabs': item.tabs,
+                    'tags': item.tags,
+                    'content': item.content,
+                    'patterns': item.patterns,
+                    'block': block,
+                };
+            });
+
+            return list;
+        },
+
     };
 
 });

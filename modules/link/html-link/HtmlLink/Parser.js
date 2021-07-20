@@ -43,14 +43,14 @@ define('HtmlLink/Parser', function (require, module, exports) {
             let tabs = line.indexOf(item);              //前导空格数。
 
             return {
-                no,           //所在的行号，从 0 开始。
-                href,       //原始地址。
-                file,       //完整的物理路径。 
-                item,       //标签的 html 内容。
-                line,       //整一行的 html 内容。
-                tabs,       //前导空格数。
-                props,     //完整的 html 属性集合。
-                link: null,       //file 对应的 HtmlLink 实例，此处先从语义上占位。
+                no,             //所在的行号，从 0 开始。
+                href,           //原始地址。
+                file,           //完整的物理路径。 
+                item,           //标签的 html 内容。
+                line,           //整一行的 html 内容。
+                tabs,           //前导空格数。
+                props,          //完整的 html 属性集合。
+                link: null,     //file 对应的 HtmlLink 实例，此处先从语义上占位。
             };
 
         }).filter((item) => { //要过滤一下。
@@ -93,6 +93,25 @@ define('HtmlLink/Parser', function (require, module, exports) {
                 'list': info.list,
             };
 
+        },
+
+        toJSON(list) {
+            list = list.map(function (item) {
+                let link = item.link.toJSON();
+
+                return {
+                    'no': item.no,          //所在的行号，从 0 开始。
+                    'href': item.href,      //原始地址。
+                    'file': item.file,      //完整的物理路径。 
+                    'item': item.item,      //标签的 html 内容。
+                    'line': item.line,      //整一行的 html 内容。
+                    'tabs': item.tabs,      //前导空格数。
+                    'props': item.tabs,     //完整的 html 属性集合。
+                    'link': link,           //
+                };
+            });
+
+            return list;
         },
     };
 

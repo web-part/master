@@ -237,8 +237,6 @@ define('MasterPage', function (require, module, exports) {
 
         }
 
-
-
         /**
         * 监控。
         */
@@ -367,6 +365,41 @@ define('MasterPage', function (require, module, exports) {
 
 
             mapper.delete(this);
+        }
+
+        toJSON() {
+            let meta = mapper.get(this);
+
+            let cssLinks = CssLinks.toJSON(meta);
+            let htmlLinks = HtmlLinks.toJSON(meta);
+            let jsLinks = JsLinks.toJSON(meta);
+            let lessLinks = LessLinks.toJSON(meta);
+            let htmlBlocks = HtmlBlocks.toJSON(meta);
+            let jsBlocks = JsBlocks.toJSON(meta);
+            let lessBlocks = LessBlocks.toJSON(meta);
+
+            return {
+                'type': module.id,
+
+                'id': meta.id,
+                'name': meta.name,
+                'file': meta.file,
+                'dir': meta.dir,
+                'dest': meta.dest,
+                'htdocs': meta.htdocs,
+                'css': meta.css,
+                'content': meta.content,
+                'excludes': meta.excludes,
+                'tags': meta.tags,
+
+                'cssLinks': cssLinks,
+                'htmlLinks': htmlLinks,
+                'jsLinks': jsLinks,
+                'lessLinks': lessLinks,
+                'htmlBlocks': htmlBlocks,
+                'jsBlocks': jsBlocks,
+                'lessBlocks': lessBlocks,
+            };
         }
 
 

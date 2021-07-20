@@ -188,6 +188,11 @@ define('MasterPage/JsLinks', function (require, module, exports) {
 
         },
 
+        toJSON(meta) {
+            let list = JsLink.toJSON(meta.JsLinks);
+            return list;
+        },
+
 
 
     };

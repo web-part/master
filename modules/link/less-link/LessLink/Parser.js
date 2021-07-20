@@ -76,8 +76,8 @@ define('LessLink/Parser', function (require, module, exports) {
                     'tabs': tabs,       //前导空格数。
                     'inline': inline,   //是否需要内联。
                     'props': props,     //html 标签里的所有属性。
-                    'link': null,       //file 对应的 LessLink 实例，此处先从语义上占位。
                     'dest': dest,       //输出的目标信息，是一个 {}。
+                    'link': null,       //file 对应的 LessLink 实例，此处先从语义上占位。
                 };
 
 
@@ -86,6 +86,30 @@ define('LessLink/Parser', function (require, module, exports) {
                 return !!item;
             });
 
+
+            return list;
+
+        },
+
+        toJSON(list) {
+
+            list = list.map((item) => {
+
+                let link = item.link.toJSON();
+                
+                return {
+                    'no': item.no,          //所在的行号，从 0 开始。
+                    'href': item.href,      //原始地址。
+                    'file': item.file,      //less 完整的物理路径。
+                    'html': item.html,      //标签的 html 内容。
+                    'line': item.line,      //整一行的 html 内容。
+                    'tabs': item.tabs,      //前导空格数。
+                    'inline': item.inline,  //是否需要内联。
+                    'props': item.props,    //html 标签里的所有属性。
+                    'dest': item.dest,      //输出的目标信息，是一个 {}。
+                    'link': link,           //
+                };
+            });
 
             return list;
 

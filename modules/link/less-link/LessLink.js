@@ -241,6 +241,17 @@ define('LessLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+
+            return {
+                'type': module.id,
+                'id': meta.id,      //实例 id。
+                'file': meta.file,  //输入的源 less 文件路径，是一个 string。
+                'output': meta.output,
+            };
+        }
+
         //静态成员。
 
         static parse(content, options) { 
@@ -251,6 +262,7 @@ define('LessLink', function (require, module, exports) {
         }
 
         static get = Parser.get;
+        static toJSON = Parser.toJSON;
 
     }
 

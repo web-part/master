@@ -185,6 +185,17 @@ define('JsLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        toJSON() {
+            let meta = mapper.get(this);
+
+            return {
+                'type': module.id,
+                'id': meta.id,              //实例 id。
+                'file': meta.file,          //输入的源 js 文件路径，是一个 string。
+                'external': meta.external,  //是否为外部地址。
+            };
+        }
+
         //静态方法。
 
         static parse(content, { dir, regexp, }) {
@@ -195,6 +206,7 @@ define('JsLink', function (require, module, exports) {
         }
 
         static build = Builder.build;
+        static toJSON = Parser.toJSON;
 
     }
 
