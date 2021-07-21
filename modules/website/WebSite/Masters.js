@@ -77,25 +77,45 @@ define('WebSite/Masters', function (require, module, exports) {
             return block;
         },
 
-        /**
-        * 编译。
-        */
-        compile(meta, options, done) {
-            let block = meta.MasterBlock;
 
-            if (!block) {
+        /**
+        * 编译所有母版页。
+        *   config = {
+        *       options: {
+        *           minify: false,      //是否压缩。
+        *       },
+        *       done: fn,               //编译及监控完成后要执行的回调函数。
+        *   };
+        */
+        compile(meta, config) {
+            let block = meta.MasterBlock;
+            let options = config.options;
+            let done = config.done;
+
+            if (!block || !options) {
                 return done();
             }
 
+            block.on('compile', 'master', {
+                'before': function (item) {
+                    Log.seperate();
+                    console.log('>> 开始编译'.cyan, item.file);
+                },
 
-            let minify = options.minify;
+                'done': function (item) {
+                    console.log('<< 完成编译'.green, item.file);
+                },
 
-            block.compile({
-                'minify': minify,
-                'done'() {
+                'all': function () {
                     done();
                 },
             });
+
+            block.compile({
+                'minify': options.minify,
+                //'done'() {}, //不指定 done，则会触发 ('compile', 'master', 'all') 事件。
+            });
+
         },
 
         /**

@@ -85,6 +85,51 @@ define('WebSite', function (require, module, exports) {
 
         }
 
+
+        /**
+        * 编译整个站点。
+        * 已重载 compile(options);    //传入一个配置对象。
+        *   options = {
+        *       packages: {             //可选，针对 packages 的配置节点。
+        *           minify: false,      //是否压缩。
+        *           name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
+        *           query: {            //生成到 href 中的 query 部分。
+        *               md5: 4,         //md5 的长度。
+        *           },
+        *       },
+        *       masters: {              //可选，针对 masters 的配置节点。
+        *           
+        *       },
+        *   };
+        */
+        compile(options = {}) {
+            let meta = mapper.get(this);
+
+            //设置当前的工作目录。
+            meta.cwd = meta.htdocs;
+
+            Packages.init(meta);
+            this.parse();
+
+            //此处可以共用 Packages.build()。
+            Packages.build(meta, {
+                'options': options.packages,
+              
+                'done'() {
+                    Masters.compile(meta, {
+                        'options': options.masters,
+
+                        'done'() {
+                            Log.allDone('全部编译完成');
+                            meta.emitter.fire('compile');
+                        },
+                    });
+                },
+            });
+        }
+
+        
+
         /**
         * 编译整个站点，完成后开启监控。
         * 已重载 watch(options);    //传入一个配置对象。

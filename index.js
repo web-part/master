@@ -106,6 +106,31 @@ module.exports = exports = {
 
     },
 
+    /**
+    * 编译。
+    * 编译完成后，不开启监控。
+    * 在某些场景下，可能需要仅编译但不开启监控。
+    * 该方法仅用于开发阶段。
+    */
+    compile(options) {
+        let website = exports.init();
+        let timer = new Timer();
+
+        timer.start();
+
+        //监控完成后。
+        website.on('compile', function () {
+            let info = timer.stop('ms');
+            console.log('耗时'.gray, info.value.toString().cyan, 'ms');
+
+            emitter.fire('done', 'compile', [website]);
+        });
+
+
+        //开启监控。
+        website.compile(options);
+    },
+
 
     /**
     * 编译并在完成后开始监控。

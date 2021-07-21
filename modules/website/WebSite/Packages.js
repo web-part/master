@@ -71,7 +71,7 @@ define('WebSite/Packages', function (require, module, exports) {
 
             return block;
         },
-
+        
 
         /**
         * 编译所有包文件，完成后开启监控。
@@ -166,9 +166,12 @@ define('WebSite/Packages', function (require, module, exports) {
                 return done();
             }
 
+            let { cwd, } = meta;
+            let { minify, begin, end, } = options;
+
             //短路径补全。
-            let begin = options.begin ? meta.cwd + options.begin : '';
-            let end = options.end ? meta.cwd + options.end : '';
+            begin = begin ? `${cwd}${begin}` : '';
+            end = end ? `${cwd}${end}` : '';
 
 
             block.on('compile', 'each', {
@@ -183,14 +186,14 @@ define('WebSite/Packages', function (require, module, exports) {
             });
 
             block.compile({
-                'minify': options.minify,
+                'minify': minify,
                 'name': options.name,
                 'begin': begin,
                 'end': end,
                 'query': options.query,
 
                 'done': function () {
-                    this.write({ 'minify': options.minify, });
+                    this.write({ 'minify': minify, });
                     done();
                 },
             });
