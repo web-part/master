@@ -144,14 +144,16 @@ define('CssLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        toJSON(item) {
             let meta = mapper.get(this);
+            let html = item ? this.render(item) : undefined;
 
             return {
                 'type': module.id,
                 'id': meta.id,
                 'file': meta.file,
                 'external': meta.external,
+                'render': html,
             };
         }
 

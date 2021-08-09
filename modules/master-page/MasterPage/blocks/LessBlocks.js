@@ -210,7 +210,7 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
 
         toJSON(meta) {
             let list = meta.LessBlocks.map(function (item) {
-                let block = item.block.toJSON();
+                let block = item.block.toJSON(item);
 
                 //以下字段参照 `BlockList/Item` 模块。
                 return {

@@ -89,11 +89,22 @@ define('JsLink/Parser', function (require, module, exports) {
 
         },
 
+
+        /**
+        * 从静态的 JsLink 节点列表提取 json 信息。
+        * @param {Array} list 静态的 JsLink 节点列表。
+        *  列表中的每个元素 item = { }; 为 parse() 方法中返回的结果。
+        * @returns 返回一个 json 信息列表。
+        */
         toJSON(list) {
 
             list = list.map((item) => {
+                // console.log(item);
 
-                let link = item.link.toJSON();
+                let link = item.link.toJSON({
+                    ...item,
+                    'md5': 4,
+                });
 
                 return {
                     'no': item.no,              //所在的行号，从 0 开始。

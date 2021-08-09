@@ -173,7 +173,6 @@ define('LessBlock', function (require, module, exports) {
         *   options = {
         *       inline: false,  //是否内联。
         *       tabs: 0,        //缩进的空格数。
-        *       href: '',       //生成到标签中 href 属性。
         *       props: {},      //生成到标签中的其它属性。
         *   };
         */
@@ -183,6 +182,7 @@ define('LessBlock', function (require, module, exports) {
             let meta = mapper.get(this);
 
             meta.list.forEach((item, index) => {
+
                 let html = item.link.render({
                     'tabs': options.tabs,
                     'inline': options.inline,
@@ -190,6 +190,7 @@ define('LessBlock', function (require, module, exports) {
                     'href': item.dest.href,
                     'md5': 4,
                 });
+
 
                 meta.contents[index] = html;
             });
@@ -304,10 +305,14 @@ define('LessBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        toJSON(item) {
             let meta = mapper.get(this);
 
-            let list = Parser.toJSON(meta.list);
+            let list = Parser.toJSON(meta.list, {
+                'tabs': item.tabs,
+            });
+
+            let html = item ? this.render(item) : undefined;
 
 
             let json = {
@@ -316,6 +321,7 @@ define('LessBlock', function (require, module, exports) {
                 'dir': meta.dir,
                 'patterns': meta.patterns,
                 'excludes': meta.excludes,
+                'render': html,
                 'list': list,
             };
 

@@ -89,7 +89,7 @@ define('HtmlBlock/Parser', function (require, module, exports) {
         toJSON(list) {
             
             list = list.map((item) => {
-                let link = item.link.toJSON();
+                let link = item.link.toJSON(item);
 
                 return {
                     'isOld': item.isOld,

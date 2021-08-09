@@ -100,7 +100,10 @@ define('CssLink/Parser', function (require, module, exports) {
         toJSON(list) {
             list = list.map((item) => {
 
-                let link = item.link.toJSON();
+                let link = item.link.toJSON({
+                    ...item,
+                    'md5': 4,
+                });
 
                 return {
                     'no': item.no,              //所在的行号，从 0 开始。

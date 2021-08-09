@@ -1,3 +1,5 @@
+
+
 /**
 * 
 */
@@ -93,9 +95,14 @@ define('LessBlock/Parser', function (require, module, exports) {
 
         },
 
-        toJSON(list) {
+        toJSON(list, opt) {
             list = list.map((item) => {
-                let link = item.link.toJSON();
+             
+
+                let link = item.link.toJSON({
+                    'tabs': opt.tabs,
+                    'href': item.dest.href,
+                });
 
                 return {
                     'isOld': item.isOld,

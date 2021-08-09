@@ -148,6 +148,7 @@ define('LessLink', function (require, module, exports) {
                 query[md5] = undefined; //这里要用 undefined 以消除 `=`。
             }
 
+
             let html = Css.mix({
                 'href': href,
                 'tabs': options.tabs,
@@ -241,14 +242,15 @@ define('LessLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        toJSON(item) {
             let meta = mapper.get(this);
+            let html = item ? this.render(item) : undefined;
 
             return {
                 'type': module.id,
                 'id': meta.id,      //实例 id。
                 'file': meta.file,  //输入的源 less 文件路径，是一个 string。
-                'output': meta.output,
+                'render': html,
             };
         }
 

@@ -188,6 +188,10 @@ define('MasterPage/JsLinks', function (require, module, exports) {
 
         },
 
+        
+        /**
+        * 提取所有静态的 JsLink 对应的 json 信息。
+        */
         toJSON(meta) {
             let list = JsLink.toJSON(meta.JsLinks);
             return list;

@@ -236,9 +236,10 @@ define('HtmlBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        toJSON(item) {
             let meta = mapper.get(this);
             let list = Parser.toJSON(meta.list);
+            let html = item ? this.render(item) : undefined;
             
             let json = {
                 'type': module.id,
@@ -246,6 +247,7 @@ define('HtmlBlock', function (require, module, exports) {
                 'dir': meta.dir,
                 'patterns': meta.patterns,
                 'excludes': meta.excludes,
+                'render': html,
                 'list': list,
             };
 

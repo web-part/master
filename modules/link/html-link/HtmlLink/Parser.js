@@ -97,7 +97,7 @@ define('HtmlLink/Parser', function (require, module, exports) {
 
         toJSON(list) {
             list = list.map(function (item) {
-                let link = item.link.toJSON();
+                let link = item.link.toJSON(item);
 
                 return {
                     'no': item.no,          //所在的行号，从 0 开始。

@@ -191,9 +191,17 @@ define('MasterPage/JsBlocks', function (require, module, exports) {
             done();
         },
 
+        /**
+        * 提取所有动态的 JsBlock 对应的 json 信息。
+        */
         toJSON(meta) {
             let list = meta.JsBlocks.map(function (item) {
-                let block = item.block.toJSON();
+                // console.log(item);
+
+                let block = item.block.toJSON({
+                    'tabs': item.tabs,
+                    'md5': 4,
+                });
 
                 //以下字段参照 `BlockList/Item` 模块。
                 return {

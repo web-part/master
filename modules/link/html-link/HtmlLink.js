@@ -243,9 +243,10 @@ define('HtmlLink', function (require, module, exports) {
 
 
 
-        toJSON() {
+        toJSON(item) {
             let meta = mapper.get(this);
             let list = Parser.toJSON(meta.list);
+            let html = item ? this.render(item) : undefined; //如果传 item 则 render()。
 
             let json = {
                 'type': module.id,
@@ -254,6 +255,7 @@ define('HtmlLink', function (require, module, exports) {
                 'file': meta.file,
                 'dir': meta.dir,
                 'content': meta.content,
+                'render': html,
                 'list': list,
             };
 

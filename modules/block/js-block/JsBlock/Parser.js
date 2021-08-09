@@ -111,9 +111,28 @@ define('JsBlock/Parser', function (require, module, exports) {
         },
 
 
-        toJSON(list) {
+        /**
+        * 从动态的 JsLink 节点列表提取 json 信息。
+        * @param {Array} list 动态的 JsLink 节点列表。
+        *  列表中的每个元素 item = { }; 为 parse() 方法中返回的结果。
+        * @param {object} [opt] 可选的配置参数。
+        *   opt = {
+        *       tabs: 0,            //缩进的空格数。
+        *       md5: 4,             //添加到 href 中 query 部分的 md5 的长度。
+        *   };
+        * @returns
+        */
+        toJSON(list, opt) {
             list = list.map((item) => {
-                let link = item.link.toJSON();
+                // console.log(item)
+
+                let data = opt ? {
+                    'tabs': opt.tabs,
+                    'md5': opt.md5,
+                    'href': item.href,
+                } : null;
+
+                let link = item.link.toJSON(data);
 
                 return {
                     'isOld': item.isOld,

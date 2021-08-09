@@ -277,9 +277,19 @@ define('JsBlock', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        /**
+        * 从当取实例中提取尽量多的 json 信息。
+        * @param {object} [opt] 可选的配置参数。
+        *   opt = {
+        *       tabs: 0,            //缩进的空格数。
+        *       md5: 4,             //添加到 href 中 query 部分的 md5 的长度。
+        *   }; 
+        * @returns 
+        */
+        toJSON(opt) {
             let meta = mapper.get(this);
-            let list = Parser.toJSON(meta.list);
+            let list = Parser.toJSON(meta.list, opt);
+            let html = opt ? this.render(opt) : undefined;
 
             let json = {
                 'type': module.id,
@@ -287,6 +297,7 @@ define('JsBlock', function (require, module, exports) {
                 'dir': meta.dir,
                 'patterns': meta.patterns,
                 'excludes': meta.excludes,
+                'render': html,
                 'list': list,
             };
 

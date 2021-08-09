@@ -185,17 +185,32 @@ define('JsLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
-        toJSON() {
+        /**
+        * 从当取实例中提取尽量多的 json 信息。
+        * @param {object} [item] 可选的配置参数。
+        *   item = {
+        *       tabs: 0,            //缩进的空格数。
+        *       href: '',           //生成到 link 标签中的 href 属性值。
+        *       md5: 4,             //添加到 href 中 query 部分的 md5 的长度。
+        *   };
+        * @returns
+        */
+        toJSON(item) {
             let meta = mapper.get(this);
+            let html = item ? this.render(item) : undefined;
 
             return {
                 'type': module.id,
                 'id': meta.id,              //实例 id。
                 'file': meta.file,          //输入的源 js 文件路径，是一个 string。
                 'external': meta.external,  //是否为外部地址。
+                'render': html,
             };
         }
 
+
+
+        //=================================================================================
         //静态方法。
 
         static parse(content, { dir, regexp, }) {
