@@ -5,7 +5,7 @@ define('HtmlLink', function (require, module, exports) {
     const console = require('@webpart/console');
     const Emitter = require('@definejs/emitter');
     const File = require('@definejs/file');
-    const Lines = require('@definejs/lines');
+    const Lines = require('Lines');
 
     const Meta = module.require('Meta');
     const Parser = module.require('Parser');
