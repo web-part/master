@@ -23,26 +23,26 @@ define('Package/Meta', function (require, module, exports) {
                 'css': config.css,          //输出的样式的目录，相对于网站根目录。
                 'dest': config.dest,        //js、html 文件分别打包后的输出目录。
 
-                'name': '',                 //包的名称，由解析器获得。
-                'dir': '',                  //包所在的目录，亦即包内模式路径的相对目录，由解析器获得，这里先占位说明。
-                'patterns': {               //路径模式列表，由解析器获得，这里先占位说明。
+                'name': '',         //包的名称，由解析器获得。
+                'dir': '',          //包所在的目录，亦即包内模式路径的相对目录，由解析器获得，这里先占位说明。
+                'patterns': {       //路径模式列表，由解析器获得，这里先占位说明。
                     'less': [],             
                     'js': [],
                     'html': [],
                 },
 
-                'this': null,               //方便内部引用自身的实例。
-                'emitter': null,            //事件驱动器。
-                'watcher': null,            //Watcher 实例。
+                'this': null,       //方便内部引用自身的实例。
+                'emitter': null,    //事件驱动器。
+                'watcher': null,    //Watcher 实例。
 
-                'LessBlock': null,          //LessBlock 实例。
-                'JsBlock': null,            //JsBlock 实例。
-                'HtmlBlock': null,          //HtmlBlock 实例。
+                'LessBlock': null,  //LessBlock 实例。
+                'JsBlock': null,    //JsBlock 实例。
+                'HtmlBlock': null,  //HtmlBlock 实例。
 
-                'type$output': {},          //记录编译后的输出结果。  
+                'type$output': {},  //记录编译后的输出结果。  
 
-                //记录编译后的输出结果，与 compile(options) 中的 options 有关，
-                //其中里面的每个类型(子对象) 中的 key = JSON.string(options);
+                //记录编译后的输出结果，与 compile(opt) 中的 opt 有关，
+                //其中里面的每个类型(子对象) 中的 key = JSON.string(opt);
                 'compile': { 
                     'css': {},
                     'js': {},
@@ -50,17 +50,17 @@ define('Package/Meta', function (require, module, exports) {
                 },
 
                 'old': {
-                    'name': '',                 //包的名称，由解析器获得。
-                    'patterns': {               //路径模式。
+                    'name': '',         //包的名称，由解析器获得。
+                    'patterns': {       //路径模式。
                         'less': [],
                         'js': [],
                         'html': [],
                     },
-                    'LessBlock': null,          //LessBlock 实例。
-                    'JsBlock': null,            //JsBlock 实例。
-                    'HtmlBlock': null,          //HtmlBlock 实例。
+                    'LessBlock': null,  //LessBlock 实例。
+                    'JsBlock': null,    //JsBlock 实例。
+                    'HtmlBlock': null,  //HtmlBlock 实例。
 
-                    'type$output': {},          //记录编译后的输出结果。  
+                    'type$output': {},  //记录编译后的输出结果。  
                 },
 
                 //让相应的缓存作废。
@@ -116,7 +116,7 @@ define('Package/Meta', function (require, module, exports) {
 
                 'type$output': {},          //记录编译后的输出结果。  
 
-                'compile': {                //记录编译后的输出结果，与 compile(options) 中的 options 有关。
+                'compile': {                //记录编译后的输出结果，与 compile(opt) 中的 opt 有关。
                     'css': {},
                     'js': {},
                     'html': {},

@@ -54,14 +54,14 @@ define('Package/HtmlBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
         *       done: fn,           //编译完成后要执行的回调函数。
         *   };
         */
-        compile(meta, options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(meta, opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let block = meta.HtmlBlock;
 
             if (!block) {
@@ -69,7 +69,7 @@ define('Package/HtmlBlock', function (require, module, exports) {
             }
 
             //先使用缓存。
-            let key = JSON.stringify(options);
+            let key = JSON.stringify(opt);
             let output = meta.compile['html'][key];
 
             if (output) {
@@ -80,7 +80,7 @@ define('Package/HtmlBlock', function (require, module, exports) {
 
             let info = block.compile({
                 'tabs': 0,
-                'minify': options.minify,
+                'minify': opt.minify,
 
                 //合并完成后，要对 html 内容进行转码的函数。
                 'transform'(content, data) {
@@ -91,7 +91,7 @@ define('Package/HtmlBlock', function (require, module, exports) {
             });
 
             let content = info.content;
-            let sample = meta.dest + options.name + '.html';
+            let sample = meta.dest + opt.name + '.html';
 
             let dest = $String.format(sample, {
                 'name': meta.name,
@@ -106,7 +106,7 @@ define('Package/HtmlBlock', function (require, module, exports) {
                 'dest': dest,
                 'href': href,
                 'md5': info.md5,
-                'minify': options.minify,
+                'minify': opt.minify,
             };
 
             meta.type$output['html'] = output;

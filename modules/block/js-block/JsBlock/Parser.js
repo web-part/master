@@ -7,20 +7,22 @@ define('JsBlock/Parser', function (require, module, exports) {
     const File = require('@definejs/file');
     const Patterns = require('@definejs/patterns');
     
+    const Env = require('Env');
     const JsLink = require('JsLink');
     const Path = require('Path');
+  
 
 
 
     return {
         /**
         * 解析。
-        *   options = {
+        *   opt = {
         *       error: function(file),  //文件不存在时的回调函数。
         *   };
         */
-        parse(meta, options = {}) {
-            let error = options.error;
+        parse(meta, opt = {}) {
+            let { error, } = opt;
 
             //解析出来的新列表，尽量复用之前创建的实例。
             let file$link = meta.file$link;     //当前集合。
@@ -29,6 +31,9 @@ define('JsBlock/Parser', function (require, module, exports) {
             let olds = [];  //可以复用的。
 
             let files = Patterns.getFiles(meta.patterns, meta.excludes);    //做减法。
+
+            //过滤掉与当前环境无关的文件。
+            files = Env.filter(files);
 
             let list = files.map((file) => {
                 let href = Path.relative(meta.dir, file);
@@ -72,7 +77,7 @@ define('JsBlock/Parser', function (require, module, exports) {
                     return;
                 }
 
-                link = new JsLink({
+                link = item.link = file$link[file] = new JsLink({
                     'file': file,
                 });
 
@@ -92,15 +97,15 @@ define('JsBlock/Parser', function (require, module, exports) {
                         return values.slice(-1)[0];
                     },
                 });
-
-                item.link = file$link[file] = link;
             });
 
-            //释放备份中没有复用到的实例。
+           
+            //清理旧的。
             Object.keys(old$link).forEach((file) => {
                 let link = old$link[file];
                 delete old$link[file];
 
+                 //释放备份中没有复用到的实例。
                 if (!olds.includes(file)) {
                     link.destroy();
                 }

@@ -20,7 +20,7 @@ define('PackageBlock', function (require, module, exports) {
     class PackageBlock {
         /**
         * 构造器。
-        *   options = {
+        *   config = {
         *       patterns: [],   //路径模式列表。
         *       htdocs: '',     //网站的根目录。 如 `htdocs/`。
         *       css: '',        //样式目录，相对于 htdocs。 如 `style/css/`。
@@ -94,7 +94,7 @@ define('PackageBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
         *       begin: '',          //可选。 合并 js 的闭包头文件。
@@ -103,11 +103,11 @@ define('PackageBlock', function (require, module, exports) {
         *       done: fn,           //编译完成后要执行的回函数。
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
             let tasker = new Tasker(meta.list);
-            let key = JSON.stringify(options);  //缓存用的 key 与 options 有关。
+            let key = JSON.stringify(opt);  //缓存用的 key 与 opt 有关。
 
             tasker.on('each', function (item, index, done) {
                 let output = item.key$output[key];
@@ -122,14 +122,14 @@ define('PackageBlock', function (require, module, exports) {
                 meta.emitter.fire('compile', 'each', 'before', [item]);
 
                 item.pack.compile({
-                    'minify': options.minify,
-                    'name': options.name,
-                    'begin': options.begin,
-                    'end': options.end,
+                    'minify': opt.minify,
+                    'name': opt.name,
+                    'begin': opt.begin,
+                    'end': opt.end,
 
                     'done'() {
                         let output = this.get({
-                            'query': options.query,
+                            'query': opt.query,
                         });
 
                         item.key$output[key] = output;
@@ -158,13 +158,13 @@ define('PackageBlock', function (require, module, exports) {
 
         /**
         * 写入到总包中。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *   };
         */
-        write(options) {
+        write(opt) {
             let meta = mapper.get(this);
-            let minify = options.minify;
+            let minify = opt.minify;
             let json = {};
 
             meta.list.forEach((item) => {

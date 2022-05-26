@@ -1,6 +1,6 @@
 
 /**
-* 静态单个引用 less 资源文件。
+* 单个静态引用 less 资源文件。
 */
 define('LessLink', function (require, module, exports) {
     const Emitter = require('@definejs/emitter');
@@ -9,10 +9,13 @@ define('LessLink', function (require, module, exports) {
 
     const Less = require('Less');
     const Css = require('Css');
+    const MetaProps = require('MetaProps');
 
     const Meta = module.require('Meta');
     const Parser = module.require('Parser');
     const Watcher = module.require('Watcher');
+    const MD5 = module.require('MD5');
+    const Query = module.require('Query');
 
     const defaults = require(`${module.id}.defaults`);
     const mapper = new Map();
@@ -55,27 +58,26 @@ define('LessLink', function (require, module, exports) {
         */
         data = {};
 
-
         /**
         * 编译。
-        * 已重载 compile(done);     //使用默认配置进行编译，完成后执行参数传入的回调函数。
-        * 已重载 compile(options);  //使用指定的配置进行编译，完成后可以执行配置中的回调函数。
-        *   options = {
+        * 已重载 compile(done);  //使用默认配置进行编译，完成后执行参数传入的回调函数。
+        * 已重载 compile(opt);   //使用指定的配置进行编译，完成后可以执行配置中的回调函数。
+        *   opt = {
         *       minify: false   //是否压缩。
         *       dest: '',       //输出的目标文件路径。 支持编译后的内容 `{md5}` 模板字段。
         *       done: fn,       //编译完成后的回调函数。
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             Less.compile({
                 'src': meta.file,
-                'minify': options.minify,
+                'minify': opt.minify,
 
-                'done'(css, md5) {
-                    let dest = options.dest || '';
+                'done': function(css, md5) {
+                    let dest = opt.dest || '';
                     let output = meta.output;
 
                     if (dest) {
@@ -96,7 +98,7 @@ define('LessLink', function (require, module, exports) {
                         'md5': md5,
                         'src': meta.file,
                         'dest': dest,
-                        'minify': options.minify,
+                        'minify': opt.minify,
                     };
 
                     done && done.call(meta.this, output);
@@ -108,7 +110,7 @@ define('LessLink', function (require, module, exports) {
         * 渲染生成 html 内容。
         *   内联: `<style>...</style>`。
         *   普通: `<link href="xx.css" rel="stylesheet" />`。
-        *   options = {
+        *   opt = {
         *       inline: false,      //是否内联。
         *       tabs: 0,            //缩进的空格数。
         *       href: '',           //生成到 link 标签中的 href 属性值。
@@ -117,44 +119,49 @@ define('LessLink', function (require, module, exports) {
         *       props: {},          //生成到标签中的其它属性。
         *    };
         */
-        render(options) {
+        render(opt) {
             let meta = mapper.get(this);
 
-            //内联方式。
-            if (options.inline) {
-                let html = Css.inline({
-                    'content': meta.output.css,
-                    'comment': meta.file,
-                    'props': options.props,
-                    'tabs': options.tabs,
-                });
-
-                return html;
+            //不符合当前设定的环境，则不生成 html 内容。
+            //明确返回 null，可以删除该行内容，而不是生成一个空行。
+            if (!meta.isEnvOK) {
+                return null; 
             }
 
-            //普通方式。
-            let md5 = options.md5 || 0;
-            let href = options.href;
-            let query = options.query || {};
+            let props = MetaProps.delete(opt.props);    //删除元数据属性。
+            let md5 = MD5.get(meta, opt.md5);
+            let query = Query.get(meta, opt.query, md5);
 
-            if (typeof query == 'function') {
-                query = query(meta.output);
-            }
+            
+            //只有明确指定了内联，且为内部文件时，才能内联。
+            let needInline = opt.inline && !meta.external;
 
-            md5 = md5 === true ? 32 : md5;          //需要截取的 md5 长度。 
-
-            if (md5 > 0) {
-                md5 = meta.output.md5.slice(0, md5);    //md5 串值。
-                query[md5] = undefined; //这里要用 undefined 以消除 `=`。
-            }
-
-
-            let html = Css.mix({
-                'href': href,
-                'tabs': options.tabs,
-                'props': options.props,
+            let html = needInline ? Css.inline({
+                'content': meta.output.css,
+                'comment': meta.file,
+                'props': props,
+                'tabs': opt.tabs,
+            }) : Css.mix({
+                'href': opt.href,
+                'tabs': opt.tabs,
+                'props': props,
                 'query': query,
             });
+
+            //取事件的最后一个回调的返回值作为要渲染的内容（如果有）。
+            let html2 = meta.emitter.fire('render', [meta.file, html, {
+                'inline': opt.inline,   //是否需要内联。
+                'tabs': opt.tabs,       //缩进的空格数。
+                'href': opt.href,       //生成到 link 标签中的 href 属性值。
+                'props': props,         //生成到标签中的其它属性。
+                'query': query,         //添加到 href 中 query 部分。
+                'md5': md5,             //文件内容对应的 md5 信息。
+                'output': meta.output,  //编译后的 css 的输出内容。
+            }]).slice(-1)[0];
+
+            if (html2 !== undefined) {
+                html = html2;
+            }
 
             return html;
         }
@@ -165,7 +172,7 @@ define('LessLink', function (require, module, exports) {
         watch() {
             let meta = mapper.get(this);
 
-            if (meta.watcher) {
+            if (meta.watcher || !meta.isEnvOK || meta.external) {
                 return;
             }
 
@@ -175,8 +182,8 @@ define('LessLink', function (require, module, exports) {
         /**
         * 构建。
         * 已重载 build(done);       //使用默认配置进行编译，完成后执行参数传入的回调函数。
-        * 已重载 build(options);    //使用指定的配置进行编译，完成后可以执行配置中的回调函数。
-        *   options = {
+        * 已重载 build(opt);        //使用指定的配置进行编译，完成后可以执行配置中的回调函数。
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       tabs: 0,            //缩进的空格数。
         *       inline: false,      //是否内联。
@@ -188,28 +195,28 @@ define('LessLink', function (require, module, exports) {
         *       done: fn,           //构建完成后的回调函数。
         *   };
         */
-        build(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        build(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             this.compile({
-                'minify': options.minify,
-                'dest': options.dest,
+                'minify': opt.minify,
+                'dest': opt.dest,
 
-                'done'(output) {
+                'done': function(output) {
                     let md5 = output.md5;
-                    let href = options.href;
+                    let href = opt.href;
 
                     if (href) {
                         href = $String.format(href, { 'md5': md5, });
                     }
 
                     let html = this.render({
-                        'tabs': options.tabs,
-                        'props': options.props,
-                        'inline': options.inline,
-                        'query': options.query,
-                        'md5': options.md5,
+                        'tabs': opt.tabs,
+                        'props': opt.props,
+                        'inline': opt.inline,
+                        'query': opt.query,
+                        'md5': opt.md5,
                         'href': href,
                     });
 
@@ -217,8 +224,6 @@ define('LessLink', function (require, module, exports) {
                 },
             });
         }
-
-
 
         /**
         * 绑定事件。
@@ -242,24 +247,29 @@ define('LessLink', function (require, module, exports) {
             mapper.delete(this);
         }
 
+        /**
+        * 
+        * @param {*} item 
+        * @returns 
+        */
         toJSON(item) {
             let meta = mapper.get(this);
             let html = item ? this.render(item) : undefined;
 
             return {
-                'type': module.id,
+                'type': module.id,  //
                 'id': meta.id,      //实例 id。
                 'file': meta.file,  //输入的源 less 文件路径，是一个 string。
-                'render': html,
+                'render': html,     //
             };
         }
 
         //静态成员。
 
-        static parse(content, options) { 
+        static parse(content, opt) { 
             return Parser.parse(content, {
-                'regexp': options.regexp || defaults.regexp,
-                ...options,
+                'regexp': opt.regexp || defaults.regexp,
+                ...opt,
             });
         }
 

@@ -7,6 +7,7 @@ define('LessLink/Parser', function (require, module, exports) {
 
     const Path = require('Path');
     const Lines = require('Lines');
+    const MetaProps = require('MetaProps');
 
     const Dest = module.require('Dest');
 
@@ -18,27 +19,27 @@ define('LessLink/Parser', function (require, module, exports) {
 
         /**
         * 从指定的 html 内容中解析出 `<link rel="less" />` 的标签列表信息。
-        *   options = {
+        *   opt = {
         *       regexp: RegExp, //提取出引用了 less 文件的 link 标签的正则表达式。
         *       dir: '',        //link 标签里的 href 属性相对的目录，即要解析的页面所在的目录。
         *       htdocs: '',     //整个站点的根目录，如果不指定，则默认为是页面所在的目录。
         *       css: '',        //样式目录，相对于 htdocs，如 `style/css/`。
         *   };
         */
-        parse(content, options) {
+        parse(content, opt) {
             //提取出如引用了 less 文件的 link 标签。
-            let regexp = options.regexp;
+            let regexp = opt.regexp;
             let list = content.match(regexp);
 
             if (!list) {
                 return [];
             }
 
-            let dir = options.dir;                  //less 标签里的 href 属性相对的目录，即要解析的页面所在的目录。
-            let htdocs = options.htdocs || dir;     //整个站点的根目录，如果不指定，则默认为是页面所在的目录。
-            let $ = cheerio;                        //后端的 jQuery 对象。
-            let lines = Lines.split(content);       //内容按行分裂的数组。
-            let startNo = 0;                        //下次搜索的起始行号。
+            let dir = opt.dir;                  //less 标签里的 href 属性相对的目录，即要解析的页面所在的目录。
+            let htdocs = opt.htdocs || dir;     //整个站点的根目录，如果不指定，则默认为是页面所在的目录。
+            let $ = cheerio;                    //后端的 jQuery 对象。
+            let lines = Lines.split(content);   //内容按行分裂的数组。
+            let startNo = 0;                    //下次搜索的起始行号。
 
 
             list = list.map((item, index) => {
@@ -49,17 +50,17 @@ define('LessLink/Parser', function (require, module, exports) {
                     return;
                 }
 
-                let props = $(item).attr();
-                let href = props.href;
-                let file = Path.join(dir, href);
-
-                let tabs = line.indexOf(item);                  //前导空格数。
-                let inline = props.inline == 'true';            //是否需要内联。
+                let props = $(item).attr();         //标签里的 html 属性。
+                let meta = MetaProps.parse(props);  //解析标签里的元数据。
+                let href = props.href;              //
+                let file = Path.join(dir, href);    //
+                let tabs = line.indexOf(item);      //前导空格数。
+                let inline = meta.inline == 'true'; //是否需要内联。
 
                 let dest = Dest.get({
                     'htdocs': htdocs,
                     'dir': dir,
-                    'css': options.css,
+                    'css': opt.css,
                     'file': file,
                 });
 
@@ -77,6 +78,7 @@ define('LessLink/Parser', function (require, module, exports) {
                     'inline': inline,   //是否需要内联。
                     'props': props,     //html 标签里的所有属性。
                     'dest': dest,       //输出的目标信息，是一个 {}。
+                    'meta': meta,       //标签里的元数据。
                     'link': null,       //file 对应的 LessLink 实例，此处先从语义上占位。
                 };
 
@@ -91,6 +93,11 @@ define('LessLink/Parser', function (require, module, exports) {
 
         },
 
+        /**
+        * 
+        * @param {Array} list 
+        * @returns 
+        */
         toJSON(list) {
 
             list = list.map((item) => {

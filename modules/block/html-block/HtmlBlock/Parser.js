@@ -7,6 +7,7 @@ define('HtmlBlock/Parser', function (require, module, exports) {
     const Patterns = require('@definejs/patterns');
     const File = require('@definejs/file');
     
+    const Env = require('Env');
     const HtmlLink = require('HtmlLink');
 
 
@@ -14,12 +15,12 @@ define('HtmlBlock/Parser', function (require, module, exports) {
     return {
         /**
         * 解析。
-        *   options = {
+        *   opt = {
         *       error: function(file),  //文件不存在时的回调函数。
         *   };
         */
-        parse(meta, options = {}) {
-            let error = options.error;
+        parse(meta, opt = {}) {
+            let { error, } = opt;
 
             //解析出来的新列表，尽量复用之前创建的实例。
             let file$link = meta.file$link;     //当前集合。
@@ -29,6 +30,10 @@ define('HtmlBlock/Parser', function (require, module, exports) {
 
             let files = Patterns.getFiles(meta.patterns, meta.excludes);    //做减法。
 
+            //过滤掉与当前环境无关的文件。
+            files = Env.filter(files);
+
+            
             let list = files.map((file) => {
                 return {
                     'isOld': false,

@@ -19,7 +19,7 @@ define('HtmlBlock', function (require, module, exports) {
     class HtmlBlock {
         /**
         * 构造器。
-        *   options = {
+        *   config = {
         *       patterns: [],   //路径模式列表。
         *       dir: '',        //路径模式中的相对目录，即要解析的页面所在的目录。 如 `htdocs/html/test/`。
         *   };
@@ -54,13 +54,13 @@ define('HtmlBlock', function (require, module, exports) {
 
         /**
         * 解析。
-        *   options = {
+        *   opt = {
         *       error: function(file),      //文件不存时要执行的函数。
         *   };
         */
-        parse(options) {
+        parse(opt) {
             let meta = mapper.get(this);
-            meta.list = Parser.parse(meta, options);
+            meta.list = Parser.parse(meta, opt);
         }
 
         /**
@@ -89,11 +89,11 @@ define('HtmlBlock', function (require, module, exports) {
         /**
         * 渲染生成 html 内容。
         * 主要提供给 watch 发生改变时快速混入。
-        *   options = {
+        *   opt = {
         *       tabs: 0,    //缩进的空格数。
         *   };
         */
-        render(options) {
+        render(opt) {
             let meta = mapper.get(this);
 
             meta.list.forEach((item, index) => {
@@ -105,7 +105,7 @@ define('HtmlBlock', function (require, module, exports) {
                 }
 
                 let html = item.link.render({
-                    'tabs': options.tabs,
+                    'tabs': opt.tabs,
                 });
 
                 meta.contents[index] = html;
@@ -118,18 +118,18 @@ define('HtmlBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       tabs: 0,        //要缩进的空格数。
         *       minify: false,  //是否压缩。
         *       dest: '',       //要写入的目标文件。 支持 `{md5}` 模板字段。
         *       transform: fn,  //可选。 渲染后，压缩前，要进行转换处理的回调函数。
         *   };
         */
-        compile(options) {
-            options = options || {};
+        compile(opt) {
+            opt = opt || {};
 
             let meta = mapper.get(this);
-            let transform = options.transform || function () { };
+            let transform = opt.transform || function () { };
 
             //源文件列表。
             let list = meta.list.map((item) => {
@@ -137,11 +137,11 @@ define('HtmlBlock', function (require, module, exports) {
             });
 
             let content = meta.this.render({
-                'tabs': options.tabs,
+                'tabs': opt.tabs,
             });
 
             let md5 = MD5.get(content);
-            let dest = options.dest;
+            let dest = opt.dest;
 
             if (dest) {
                 dest = $String.format(dest, {
@@ -151,7 +151,7 @@ define('HtmlBlock', function (require, module, exports) {
 
             //让外界有机会进处转换处理。
             let content2 = transform(content, {
-                'tabs': options.tabs,
+                'tabs': opt.tabs,
                 'md5': md5,
                 'dir': meta.dir,                 //相对目录。
                 'dest': dest,
@@ -163,7 +163,7 @@ define('HtmlBlock', function (require, module, exports) {
             }
 
 
-            let minify = options.minify;
+            let minify = opt.minify;
 
             if (minify) {
                 content = Html.minify(content, minify);
@@ -182,8 +182,6 @@ define('HtmlBlock', function (require, module, exports) {
                 list,
             };
         }
-
-
 
         /**
         * 监控当前引用文件和下级列表的变化。

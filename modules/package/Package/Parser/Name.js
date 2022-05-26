@@ -11,20 +11,19 @@ define('Package/Parser/Name', function (require, module, exports) {
     return {
         /**
         * 解析。
-        *   options = {
+        *   opt = {
                 name: '',
                 dir: '',
             };
         */
-        get(options) {
-            let name = options.name;
+        get(opt) {
+            let { name, dir, } = opt;
+            
             if (name) {
                 return name;
             }
 
             //如果未指定 name，则以包文件所在的目录的第一个 js 文件名作为 name。
-
-            let dir = options.dir;
             let files = Patterns.getFiles(dir, '*.js');
 
             name = files[0];

@@ -53,14 +53,14 @@ define('Package/LessBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
         *       done: fn,           //编译完成后要执行的回调函数。
         *   };
         */
-        compile(meta, options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(meta, opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let block = meta.LessBlock;
 
             if (!block) {
@@ -68,7 +68,7 @@ define('Package/LessBlock', function (require, module, exports) {
             }
 
             //先使用缓存。
-            let key = JSON.stringify(options);
+            let key = JSON.stringify(opt);
             let output = meta.compile['css'][key];
 
             if (output) {
@@ -78,14 +78,14 @@ define('Package/LessBlock', function (require, module, exports) {
 
             //
             block.compile({
-                'minify': options.minify,
+                'minify': opt.minify,
                 'concat': true,
 
                 'done'(info) {
                     let content = info.content;
                     let md5 = info.md5;
 
-                    let sample = meta.css + options.name + '.css';
+                    let sample = meta.css + opt.name + '.css';
 
                     let href = $String.format(sample, {
                         'name': meta.name,
@@ -101,7 +101,7 @@ define('Package/LessBlock', function (require, module, exports) {
                         'dest': dest,
                         'href': href,
                         'md5': md5,
-                        'minify': options.minify,
+                        'minify': opt.minify,
                     };
 
                     meta.type$output['css'] = output;

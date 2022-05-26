@@ -134,23 +134,21 @@ define('MasterPage', function (require, module, exports) {
 
         /**
         * 渲染生成 html (文件)。
-        *   options = {
+        *   opt = {
         *       minify: false,      //可选。 是否压缩。
         *       dest: true | '',    //是否输出目标文件，或者指定为一个文件路径。 支持 `{name}`、`{md5}` 模板字段。
         *   };
         */
-        render(options = {}) {
-            let meta = mapper.get(this);
-            let minify = options.minify;
-            let html = Lines.stringify(meta.lines);
+        render(opt = {}) {
+            let { minify, dest, } = opt;
 
+            let meta = mapper.get(this);
+            let html = Lines.stringify(meta.lines);
 
             html = HtmlLink.replaceTabs(html);
 
 
-            let dest = options.dest;
-            let invalid = Validater.checkIds(html);
-
+            // let invalid = Validater.checkIds(html);
             //if (invalid) {
             //    throw new Error();
             //}
@@ -200,13 +198,13 @@ define('MasterPage', function (require, module, exports) {
 
         /**
         * 编译当前母版页。
-        *   options = {
+        *   opt = {
         *       minify: false,  //可选，是否压缩。
         *       done: fn,       //可选，编译完成后要执行的回调函数。
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             let tasker = new Tasker([
@@ -226,7 +224,7 @@ define('MasterPage', function (require, module, exports) {
 
             tasker.on('all',  function () {
                 meta.this.render({
-                    'minify': options.minify,
+                    'minify': opt.minify,
                     'dest': true,
                 });
 
@@ -243,9 +241,7 @@ define('MasterPage', function (require, module, exports) {
         watch() {
             let meta = mapper.get(this);
 
-
             meta.watcher = meta.watcher || Watcher.create(meta);
-
 
             CssLinks.watch(meta);
             LessLinks.watch(meta);
@@ -259,7 +255,7 @@ define('MasterPage', function (require, module, exports) {
 
         /**
         * 构建。
-        *   options = {
+        *   opt = {
         *       lessLink: {
         *           minify: true,       //是否压缩。
         *           name: '{md5}.css',  //如果指定，则输出目标文件。 支持模板字段 `{name}` 和 `{md5}`。
@@ -289,19 +285,19 @@ define('MasterPage', function (require, module, exports) {
         *       done: fn,               //构建完成后要执行的回调函数。
         *   };
         */
-        build(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        build(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             let tasker = new Tasker([
                 { 'fn': CssLinks.build, },
-                { 'fn': LessLinks.build, 'opt': options.lessLink, },
+                { 'fn': LessLinks.build, 'opt': opt.lessLink, },
                 { 'fn': HtmlLinks.render, },
                 { 'fn': JsLinks.build, },
 
-                { 'fn': LessBlocks.build, 'opt': options.lessBlock, },
+                { 'fn': LessBlocks.build, 'opt': opt.lessBlock, },
                 { 'fn': HtmlBlocks.render, },
-                { 'fn': JsBlocks.build, 'opt': options.jsBlock, },
+                { 'fn': JsBlocks.build, 'opt': opt.jsBlock, },
             ]);
 
             tasker.on('each', function ({ fn, opt, }, index, done) {
@@ -310,10 +306,10 @@ define('MasterPage', function (require, module, exports) {
             });
 
             tasker.on('all', function () {
-                let opt = options.html || {};
+                let data = opt.html || {};
 
                 meta.this.render({
-                    'minify': opt.minify,
+                    'minify': data.minify,
                     'dest': true,
                 });
 

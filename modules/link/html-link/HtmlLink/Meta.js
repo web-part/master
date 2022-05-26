@@ -4,33 +4,36 @@
 */
 define('HtmlLink/Meta', function (require, module, exports) {
     const ID = require('ID');
+    const Env = require('Env');
 
     return {
         create(config, others) {
             let { regexp, changeDelay, content, file, parent, } = config;
             let id = ID.next(module.parent.id);
+            let isEnvOK = Env.check(file);
 
             let meta = {
-                'id': id,                           //实例 id。
-                'regexp': regexp,                   //提取的正则表达式。 在子模块 Parser 中用到。
-                'changeDelay': changeDelay,         //多个下级在指定时间内的多次 change 只会触发当前实例的一次 `change` 事件。
-                'file': file,                       //文件路径。
-                'dir': '',                          //当前 html 片段页所在的目录，由下级模块 Parse 解析取得。
-                'content': content || '',           //当前 html 片段的内容。
-                'lines': [],                        //content 按行分裂的数组。
-                'list': [],                         //下级列表。 item = { no, file, ..., link, }; 具体字段见同级模块 Parser.js
-                'old': {                            //重新解析前对一些字段的备份。
-                    'file$link': {},                //
+                'id': id,                   //实例 id。
+                'regexp': regexp,           //提取的正则表达式。 在子模块 Parser 中用到。
+                'changeDelay': changeDelay, //多个下级在指定时间内的多次 change 只会触发当前实例的一次 `change` 事件。
+                'file': file,               //文件路径。
+                'isEnvOK': isEnvOK,         //能否在当前环境下使用，如果可以则渲染生成 html。
+                'dir': '',                  //当前 html 片段页所在的目录，由下级模块 Parse 解析取得。
+                'content': content || '',   //当前 html 片段的内容。
+                'lines': [],                //content 按行分裂的数组。
+                'list': [],                 //下级列表。 item = { no, file, ..., link, }; 具体字段见同级模块 Parser.js
+                'old': {                    //重新解析前对一些字段的备份。
+                    'file$link': {},        //
                 },
 
-                'file$link': {},                    //文件名对应的下级 Link 实例。    
-                'key$output': {},                   //缓存 this.html(options) 输出。 key = JSON.stringify(options);
+                'file$link': {},            //文件名对应的下级 Link 实例。    
+                'key$output': {},           //缓存 this.html(options) 输出。 key = JSON.stringify(options);
 
-                '$': null,                          //cheerio 实例。
-                'parent': parent || null,           //所属于的父节点。
-                'this': null,                       //方便内部引用自身的实例。
-                'emitter': null,                    //事件驱动器。
-                'watcher': null,                    //Watcher 实例。
+                '$': null,                  //cheerio 实例。
+                'parent': parent || null,   //所属于的父节点。
+                'this': null,               //方便内部引用自身的实例。
+                'emitter': null,            //事件驱动器。
+                'watcher': null,            //Watcher 实例。
 
 
                 change(timeout) {

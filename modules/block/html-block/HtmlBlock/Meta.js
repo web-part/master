@@ -68,10 +68,10 @@ define('HtmlBlock/Meta', function (require, module, exports) {
         reset(meta) {
             meta.old.file$link = meta.file$link;
 
-            Object.assign(meta, {
-                'file$link': {},
-                'list': [],                         // item = { file, link, isOld, };
-                'contents': [],                     //file 对应的内容的占位符。
+            Object.assign(meta, {   //
+                'file$link': {},    //
+                'list': [],         // item = { file, link, isOld, };
+                'contents': [],     //file 对应的内容的占位符。
             });
         },
 

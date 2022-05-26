@@ -15,13 +15,14 @@ define('WebSite/Packages', function (require, module, exports) {
         * 
         */
         init(meta) {
+            //没有指定分包配置，则不启用分包模式。
             if (!meta.packages) {
                 return;
             }
 
             let dest = meta.packages.dest;
-            let dir = meta.cwd + dest.dir;      //分包资源打包后的输出目录。
-            let file = meta.cwd + dest.file;    //总包配置文件的输出路径。
+            let dir = meta.cwd + dest.dir;      //分包资源打包后的输出目录。 如 `htdocs/packages/items/`。
+            let file = meta.cwd + dest.file;    //总包配置文件的输出路径。 如 `htdocs/packages/all.json`。
 
             //先清空，避免使用者意外用到。
             Directory.clear(dir);
@@ -35,9 +36,15 @@ define('WebSite/Packages', function (require, module, exports) {
         * 解析。
         */
         parse(meta) {
-            let options = meta.packages || {};
-            let { enabled, patterns, dest, } = options;
+            let opt = meta.packages;
 
+            //未指定分包的配置，则不启用分包模式。
+            if (!opt) {
+                return;
+            }
+
+            //指定了分包配置，则字段不合适，则不启用分包模式。
+            let { enabled, patterns, dest, } = opt;
             if (!enabled || !patterns || !patterns.length) {
                 return null;
             }
@@ -50,16 +57,27 @@ define('WebSite/Packages', function (require, module, exports) {
                 'dest': dest,
             });
 
-            block.on('compile', {
-                'html-block': function (...args) {
-                    let values = meta.emitter.fire('package', 'compile', 'html-block', args);
-                    return values.slice(-1)[0];
+
+            block.on({
+                'compile': {
+                    'html-block': function (...args) {
+                        let values = meta.emitter.fire('package', 'compile', 'html-block', args);
+                        return values.slice(-1)[0];
+                    },
+                    'js-block': function (...args) {
+                        let values = meta.emitter.fire('package', 'compile', 'js-block', args);
+                        return values.slice(-1)[0];
+                    },
                 },
-                'js-block': function (...args) {
-                    let values = meta.emitter.fire('package', 'compile', 'js-block', args);
-                    return values.slice(-1)[0];
+                'concat': {
+                    'js-block': function (...args) {
+                        let values = meta.emitter.fire('package', 'concat', 'js-block', args);
+                        return values.slice(-1)[0];
+                    },
                 },
             });
+
+          
 
             let files = block.parse();
             let count = files.length;
@@ -76,7 +94,7 @@ define('WebSite/Packages', function (require, module, exports) {
         /**
         * 编译所有包文件，完成后开启监控。
         *   config = {
-        *       options: {
+        *       opt: {
         *           disabled: false,    //是否禁用打包功能。
         *           minify: false,      //是否压缩。
         *           name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
@@ -88,22 +106,21 @@ define('WebSite/Packages', function (require, module, exports) {
         */
         watch(meta, config) {
             let block = meta.PackageBlock;
-            let options = config.options;
-            let done = config.done;
+            let { opt, done, } = config;
 
-            if (!block || !options) {
+            if (!block || !opt) {
                 return done();
             }
 
             //启用打包功能。
-            let minify = options.minify;
+            let minify = opt.minify;
             let change = config.change;
 
             block.on('change', function () {
                 this.compile({
                     'minify': minify,
-                    'name': options.name,
-                    'query': options.query,
+                    'name': opt.name,
+                    'query': opt.query,
 
                     'done'() {
                         this.write({ 'minify': minify, });
@@ -132,8 +149,8 @@ define('WebSite/Packages', function (require, module, exports) {
 
             block.compile({
                 'minify': minify,
-                'name': options.name,
-                'query': options.query,
+                'name': opt.name,
+                'query': opt.query,
 
                 'done': function () {
                     this.write({ 'minify': minify, });
@@ -147,7 +164,7 @@ define('WebSite/Packages', function (require, module, exports) {
         /**
         * 构建。
         *   config = {
-        *       options : {
+        *       opt : {
         *           minify: true,       //是否压缩。
         *           name: '{md5}',      //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
         *           begin: '',          //可选。 合并 js 的闭包头文件。
@@ -159,15 +176,15 @@ define('WebSite/Packages', function (require, module, exports) {
         */
         build(meta, config) {
             let block = meta.PackageBlock;
-            let options = config.options;
+            let opt = config.opt;
             let done = config.done;
 
-            if (!block || !options) {
+            if (!block || !opt) {
                 return done();
             }
 
             let { cwd, } = meta;
-            let { minify, begin, end, } = options;
+            let { minify, begin, end, } = opt;
 
             //短路径补全。
             begin = begin ? `${cwd}${begin}` : '';
@@ -187,10 +204,10 @@ define('WebSite/Packages', function (require, module, exports) {
 
             block.compile({
                 'minify': minify,
-                'name': options.name,
+                'name': opt.name,
                 'begin': begin,
                 'end': end,
-                'query': options.query,
+                'query': opt.query,
 
                 'done': function () {
                     this.write({ 'minify': minify, });

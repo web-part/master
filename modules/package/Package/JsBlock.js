@@ -45,6 +45,8 @@ define('Package/JsBlock', function (require, module, exports) {
                 'delay': 0,
             });
 
+          
+
             block.parse();
 
             return block;
@@ -53,16 +55,16 @@ define('Package/JsBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
-        *       begin: '',          //可选。 合并 js 的闭包头文件。
+        *       begin: '',          //可选。 合并 js 的闭包的头文件。
         *       end: '',            //可选。 合并 js 的闭包的尾文件。
         *       done: fn,           //编译完成后要执行的回调函数。
         *   };
         */
-        compile(meta, options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(meta, opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let block = meta.JsBlock;
 
             if (!block) {
@@ -70,7 +72,7 @@ define('Package/JsBlock', function (require, module, exports) {
             }
 
             //先使用缓存。
-            let key = JSON.stringify(options);
+            let key = JSON.stringify(opt);
             let output = meta.compile['js'][key];
 
             if (output) {
@@ -80,9 +82,13 @@ define('Package/JsBlock', function (require, module, exports) {
 
 
             let info = block.concat({
-                'minify': options.minify,
-                'begin': options.begin,
-                'end': options.end,
+                'minify': opt.minify,
+                'begin': opt.begin,
+                'end': opt.end,
+                'each': function (...args) { 
+                    let values = meta.emitter.fire('concat', 'js-block', args);
+                    return values.slice(-1)[0];
+                },
 
                 'transform'(content, data) {
                     let values = meta.emitter.fire('compile', 'js-block', [content, {
@@ -96,7 +102,7 @@ define('Package/JsBlock', function (require, module, exports) {
             });
 
             let content = info.content;
-            let sample = meta.dest + options.name + '.js';
+            let sample = meta.dest + opt.name + '.js';
 
             let dest = $String.format(sample, {
                 'name': meta.name,
@@ -104,15 +110,13 @@ define('Package/JsBlock', function (require, module, exports) {
             });
 
             let href = Path.relative(meta.htdocs, dest);
-            
-
 
             //有可能是空内容。
             output = !content ? {} : {
                 'dest': dest,
                 'href': href,
                 'md5': info.md5,
-                'minify': options.minify,
+                'minify': opt.minify,
             };
 
             meta.type$output['js'] = output;

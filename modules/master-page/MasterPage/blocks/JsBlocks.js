@@ -113,7 +113,7 @@ define('MasterPage/JsBlocks', function (require, module, exports) {
 
                 let html = item.block.render({
                     'tabs': item.tabs,
-                    'md5': 4,
+                    'md5': meta.md5.js,
                 });
 
                 Lines.replace(meta.lines, item.begin, item.end, html);
@@ -156,7 +156,7 @@ define('MasterPage/JsBlocks', function (require, module, exports) {
 
         /**
         * 构建。
-        *   options = {
+        *   opt = {
         *       begin: '',          //闭包的头片段文件路径。
         *       end: '',            //闭包的尾片段文件路径。
         *       minify: false,      //是否压缩。
@@ -167,21 +167,21 @@ define('MasterPage/JsBlocks', function (require, module, exports) {
         *       transform: fn,      //可选。 合并完成后、压缩之前，要对 js 内容进行转码的函数(如 babel 转码)。
         *   };
         */
-        build(meta, options, done) {
+        build(meta, opt, done) {
 
             meta.JsBlocks.forEach((item) => {
 
                 let html = item.block.build({
                     'tabs': item.tabs,
 
-                    'begin': options.begin,
-                    'end': options.end,
-                    'minify': options.minify,
-                    'inline': options.inline,
-                    'name': options.name,
-                    'props': options.props,
-                    'query': options.query,
-                    'transform': options.transform,
+                    'begin': opt.begin,
+                    'end': opt.end,
+                    'minify': opt.minify,
+                    'inline': opt.inline,
+                    'name': opt.name,
+                    'props': opt.props,
+                    'query': opt.query,
+                    'transform': opt.transform,
                 });
 
                 Lines.replace(meta.lines, item.begin, item.end, html);

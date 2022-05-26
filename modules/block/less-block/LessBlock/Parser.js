@@ -8,18 +8,19 @@ define('LessBlock/Parser', function (require, module, exports) {
     const Patterns = require('@definejs/patterns');
     const File = require('@definejs/file');
     
+    const Env = require('Env');
     const LessLink = require('LessLink');
 
 
     return {
         /**
         * 解析。
-        *   options = {
+        *   opt = {
         *       error: function(file),  //文件不存在时的回调函数。
         *   };
         */
-        parse(meta, options = {}) {
-            let error = options.error;
+        parse(meta, opt = {}) {
+            let { error, } = opt;
 
             //解析出来的新列表，尽量复用之前创建的实例。
             let file$link = meta.file$link;     //当前集合。
@@ -28,6 +29,9 @@ define('LessBlock/Parser', function (require, module, exports) {
             let olds = [];  //可以复用的。
 
             let files = Patterns.getFiles(meta.patterns, meta.excludes);    //做减法。
+
+            //过滤掉与当前环境无关的文件。
+            files = Env.filter(files); 
 
             let list = files.map((file) => {
                 let dest = LessLink.get({
@@ -74,8 +78,31 @@ define('LessBlock/Parser', function (require, module, exports) {
                     return;
                 }
 
-                let link = file$link[file] || new LessLink({
+                let link = item.link = file$link[file];
+
+                if (link) {
+                    return;
+                }
+
+
+                link = new LessLink({
                     'file': file,
+                });
+
+                link.on({
+                    'render': function (file, html, data) {
+                        //增加些字段。
+                        Object.assign(data, {
+                            'dir': meta.dir,
+                            'link': link,
+                            'item': null,       //item 为空，说明是动态的方式引入的。
+                        });
+
+                        let args = [...arguments];
+                        let values = meta.emitter.fire('render', 'less-link', args);
+
+                        return values.slice(-1)[0];
+                    },
                 });
 
                 item.link = file$link[file] = link;

@@ -87,7 +87,7 @@ define('Package', function (require, module, exports) {
 
         /**
         * 编译当前包文件。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
         *       begin: '',          //可选。 合并 js 的闭包头文件。
@@ -95,8 +95,8 @@ define('Package', function (require, module, exports) {
         *       done: fn,           //编译完成后要执行的回调函数。
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             let tasker = new Tasker([
@@ -107,15 +107,15 @@ define('Package', function (require, module, exports) {
 
             tasker.on('each', function (M, index, done) {
                 let config = {
-                    'minify': options.minify,
-                    'name': options.name,
+                    'minify': opt.minify,
+                    'name': opt.name,
                     'done': done,
                 };
 
                 //这些字段是针对 JsBlock 的。
                 if (M === JsBlock) {
-                    config.begin = options.begin;
-                    config.end = options.end;
+                    config.begin = opt.begin;
+                    config.end = opt.end;
                 }
 
                 M.compile(meta, config);
@@ -162,17 +162,17 @@ define('Package', function (require, module, exports) {
 
         /**
         * 获取包的输出内容。
-        *   options = {
+        *   opt = {
         *       query: {
         *           md5: 4,     //md5 的长度。 此字段是特殊的，当指定时，则认为是要截取的 md5 的长度。
         *       },
         *   };
         */
-        get(options = {}) {
+        get(opt = {}) {
             let meta = mapper.get(this);
             let type$output = meta.type$output;
             let json = {};
-            let query = Object.assign({}, options.query); //因为要删除 md5 字段，为避免互相影响，先拷贝一份。
+            let query = { ...opt.query, }; //因为要删除 md5 字段，为避免互相影响，先拷贝一份。
             let md5Len = query['md5'] || 0;
 
             delete query['md5'];

@@ -7,13 +7,12 @@ define('WebSite/Masters/JsBlock', function (require, module, exports) {
 
     return {
 
-        normalize(meta, options) {
+        normalize(meta, opt) {
 
-            options = Object.assign({}, options, {
+            opt = Object.assign({}, opt, {
 
                 //让外界有机会对合并后的 js 内容进行转换(如 babel)。
-                'transform'(content, data) {
-                    let args = [...arguments];
+                'transform'(...args) {
                     let values = meta.emitter.fire('build', 'js-block', args);
                     return values.slice(-1)[0];
                 },
@@ -22,18 +21,18 @@ define('WebSite/Masters/JsBlock', function (require, module, exports) {
 
             //短路径补全。
             let cwd = meta.cwd;
-            let begin = options.begin;
-            let end = options.end;
+            let begin = opt.begin;
+            let end = opt.end;
 
             if (begin) {
-                options.begin = cwd + begin;
+                opt.begin = cwd + begin;
             }
 
             if (end) {
-                options.end = cwd + end;
+                opt.end = cwd + end;
             }
 
-            return options;
+            return opt;
 
         },
 

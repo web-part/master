@@ -79,8 +79,14 @@ define('MasterPage/Meta', function (require, module, exports) {
                     'js': config.tags.js,
                 },
 
+                'md5': {
+                    'css': config.md5.css,
+                    'less': config.md5.less,
+                    'js': config.md5.js,
+                },
+
                 //
-                'old': {                    //重新解析前对一些字段的备份。
+                'old': {                        //重新解析前对一些字段的备份。
                     'css$link': {},             //css 文件名对应的 CssLink 实例。
                     'less$link': {},            //less 文件名对应的 LessLink 实例。
                     'js$link': {},              //js 文件名对应的 JsLink 实例。

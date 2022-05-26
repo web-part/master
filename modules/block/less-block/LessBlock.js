@@ -60,13 +60,13 @@ define('LessBlock', function (require, module, exports) {
 
         /**
         * 解析。
-        *   options = {
+        *   opt = {
         *       error: function(file),      //文件不存时要执行的函数。
         *   };
         */
-        parse(options) {
+        parse(opt) {
             let meta = mapper.get(this);
-            meta.list = Parser.parse(meta, options);
+            meta.list = Parser.parse(meta, opt);
         }
 
         /**
@@ -95,7 +95,7 @@ define('LessBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       concat: false,      //是否合并输出的内容。
         *       dest: {
@@ -105,12 +105,12 @@ define('LessBlock', function (require, module, exports) {
         *       done: fn,           //编译完成后要执行的回函数。
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
             let tasker = new Tasker(meta.list);
-            let dest = options.dest || {};
-            let concat = options.concat;
+            let dest = opt.dest || {};
+            let concat = opt.concat;
 
             tasker.on('each', function (item, index, done) {
                 let file = dest.each;
@@ -126,7 +126,7 @@ define('LessBlock', function (require, module, exports) {
                 }
 
                 item.link.compile({
-                    'minify': options.minify,
+                    'minify': opt.minify,
                     'dest': file,
                     'done'(output) {
                         done(output);
@@ -170,25 +170,26 @@ define('LessBlock', function (require, module, exports) {
 
         /**
         * 渲染生成 html。
-        *   options = {
+        *   opt = {
         *       inline: false,  //是否内联。
         *       tabs: 0,        //缩进的空格数。
+        *       md5: 4,         //添加到 href 中 query 部分的 md5 的长度。
         *       props: {},      //生成到标签中的其它属性。
         *   };
         */
-        render(options) {
-            options = options || {};
+        render(opt) {
+            opt = opt || {};
 
             let meta = mapper.get(this);
 
             meta.list.forEach((item, index) => {
 
                 let html = item.link.render({
-                    'tabs': options.tabs,
-                    'inline': options.inline,
-                    'props': options.props,
+                    'tabs': opt.tabs,
+                    'inline': opt.inline,
+                    'props': opt.props,
                     'href': item.dest.href,
-                    'md5': 4,
+                    'md5': opt.md5,
                 });
 
 
@@ -228,8 +229,8 @@ define('LessBlock', function (require, module, exports) {
         /**
         * 构建。
         * 已重载 build(done);
-        * 已重载 build(options);
-        *   options = {
+        * 已重载 build(opt);
+        *   opt = {
         *       tabs: 0,            //缩进的空格数。
         *       minify: false,      //是否压缩。
         *       inline: false,      //是否内联。
@@ -239,26 +240,26 @@ define('LessBlock', function (require, module, exports) {
         *       done: fn,           //构建完成后的回调函数。
         *   };
         */
-        build(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        build(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
 
             this.compile({
-                'minify': options.minify,
+                'minify': opt.minify,
                 'concat': true,
                 'dest': {
                     'each': false,
-                    'all': options.dest,
+                    'all': opt.dest,
                 },
 
                 'done'(info) {
                     let html = '';
 
-                    if (options.inline) {
+                    if (opt.inline) {
                         html = Css.inline({
                             'content': info.content,
-                            'tabs': options.tabs,
-                            'props': options.props,
+                            'tabs': opt.tabs,
+                            'props': opt.props,
                         });
                     }
                     else {
@@ -266,9 +267,9 @@ define('LessBlock', function (require, module, exports) {
 
                         html = Css.mix({
                             'href': href,
-                            'tabs': options.tabs,
-                            'props': options.props,
-                            'query': options.query,
+                            'tabs': opt.tabs,
+                            'props': opt.props,
+                            'query': opt.query,
                         });
                     }
 

@@ -4,14 +4,16 @@
 */
 define('CssLink', function (require, module, exports) {
     const Emitter = require('@definejs/emitter');
-    const MD5 = require('@definejs/md5');
     
     const Css = require('Css');
+    const MetaProps = require('MetaProps');
 
     const Meta = module.require('Meta');
     const Parser = module.require('Parser');
     const Watcher = module.require('Watcher');
     const Builder = module.require('Builder');
+    const MD5 = module.require('MD5');
+    const Query = module.require('Query');
 
     const defaults = require(`${module.id}.defaults`);
     const mapper = new Map();
@@ -49,8 +51,8 @@ define('CssLink', function (require, module, exports) {
         /**
         * 渲染生成 html 内容。
         *   内联: `<style>...</style>`。
-        *   普通: `<link href="xx.css" rel="stylesheet" />`。
-        *   options = {
+        *   普通: `<link rel="stylesheet" href="xx.css" />`。
+        *   opt = {
         *       inline: false,      //是否内联。
         *       tabs: 0,            //缩进的空格数。
         *       href: '',           //生成到 link 标签中的 href 属性值。
@@ -59,49 +61,50 @@ define('CssLink', function (require, module, exports) {
         *       props: {},          //生成到标签中的其它属性。
         *    };
         */
-        render(options) {
+        render(opt) {
             let meta = mapper.get(this);
-            let props = Object.assign({}, options.props);
 
-            delete props['data-meta'];  //删除元数据属性。
+            //不符合当前设定的环境，则不生成 html 内容。
+            //明确返回 null，可以删除该行内容，而不是生成一个空行。
+            if (!meta.isEnvOK) {
+                return null;
+            }
+
+            let props = MetaProps.delete(opt.props);    //删除元数据属性。
+            let md5 = MD5.get(meta, opt.md5);
+            let query = Query.get(meta, opt.query, md5);
+
 
             //只有明确指定了内联，且为内部文件时，才能内联。
-            if (options.inline && !meta.external) {
-                let html = Css.inline({
-                    'file': meta.file,
-                    'comment': true,
-                    'props': props,
-                    'tabs': options.tabs,
-                });
+            let needInline = opt.inline && !meta.external;
 
-                return html;
-            }
-
-            //普通方式。
-            let md5 = options.md5 || 0;
-            let href = options.href;
-            let query = options.query || {};
-
-            if (typeof query == 'function') {
-                query = query(meta.output);
-            }
-
-            if (!meta.external) {
-                md5 = md5 === true ? 32 : md5;  //md5 的长度。
-
-                if (md5 > 0) {
-                    md5 = MD5.read(meta.file, md5); //md5 串值。
-                    query[md5] = undefined; //这里要用 undefined 以消除 `=`。
-                }
-            }
-
-
-            let html = Css.mix({
-                'href': href,
-                'tabs': options.tabs,
+            let html = needInline ? Css.inline({
+                'file': meta.file,
+                'comment': true,
+                'props': props,
+                'tabs': opt.tabs,
+            }): Css.mix({
+                'href': opt.href,
+                'tabs': opt.tabs,
                 'props': props,
                 'query': query,
             });
+
+            //取事件的最后一个回调的返回值作为要渲染的内容（如果有）。
+            let html2 = meta.emitter.fire('render', [meta.file, html, {
+                'inline': opt.inline,   //是否需要内联。
+                'tabs': opt.tabs,       //缩进的空格数。
+                'href': opt.href,       //生成到 link 标签中的 href 属性值。
+                'props': props,         //生成到标签中的其它属性。
+                'md5': md5,             //文件内容对应的 md5 信息。
+                'query': query,         //添加到 href 中 query 部分。
+            }]).slice(-1)[0];
+
+
+            if (html2 !== undefined) {
+                html = html2;
+            }
+            
 
             return html;
         }
@@ -113,13 +116,11 @@ define('CssLink', function (require, module, exports) {
         watch() {
             let meta = mapper.get(this);
 
-            if (meta.watcher) {
+            if (meta.watcher || !meta.isEnvOK || meta.external) {
                 return;
             }
 
             meta.watcher = Watcher.create(meta);
-
-
         }
 
         /**

@@ -16,6 +16,8 @@ define('WebSite', function (require, module, exports) {
     const Defaults = require('Defaults');
     const Log = require('Log');
     const Watcher = require('Watcher');
+    const Env = require('Env');
+    
 
     const Meta = module.require('Meta');
     const Masters = module.require('Masters');
@@ -74,10 +76,11 @@ define('WebSite', function (require, module, exports) {
         * 解析。
         */
         parse() {
-            //要从母版页中减去包中所引用的资源文件。
+            //如果启用了分包模式，则要从母版页中减去包中所引用的资源文件。
             let meta = mapper.get(this);
             let packages = meta.PackageBlock = Packages.parse(meta);
             let excludes = packages ? packages.get('type$patterns') : {};
+            
 
             meta.MasterBlock = Masters.parse(meta, {
                 'excludes': excludes,
@@ -88,8 +91,8 @@ define('WebSite', function (require, module, exports) {
 
         /**
         * 编译整个站点。
-        * 已重载 compile(options);    //传入一个配置对象。
-        *   options = {
+        * 已重载 compile(opt);    //传入一个配置对象。
+        *   opt = {
         *       packages: {             //可选，针对 packages 的配置节点。
         *           minify: false,      //是否压缩。
         *           name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
@@ -102,7 +105,7 @@ define('WebSite', function (require, module, exports) {
         *       },
         *   };
         */
-        compile(options = {}) {
+        compile(opt = {}) {
             let meta = mapper.get(this);
 
             //设置当前的工作目录。
@@ -113,11 +116,11 @@ define('WebSite', function (require, module, exports) {
 
             //此处可以共用 Packages.build()。
             Packages.build(meta, {
-                'options': options.packages,
+                'opt': opt.packages,
               
                 'done'() {
                     Masters.compile(meta, {
-                        'options': options.masters,
+                        'opt': opt.masters,
 
                         'done'() {
                             Log.allDone('全部编译完成');
@@ -132,8 +135,9 @@ define('WebSite', function (require, module, exports) {
 
         /**
         * 编译整个站点，完成后开启监控。
-        * 已重载 watch(options);    //传入一个配置对象。
-        *   options = {
+        * 已重载 watch(opt);    //传入一个配置对象。
+        *   opt = {
+        *       env: 'dev',             //当前使用的环境名称。
         *       packages: {             //可选，针对 packages 的配置节点。
         *           minify: false,      //是否压缩。
         *           name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
@@ -146,17 +150,18 @@ define('WebSite', function (require, module, exports) {
         *       },
         *   };
         */
-        watch(options = {}) {
+        watch(opt = {}) {
             let meta = mapper.get(this);
 
             //设置当前的工作目录。
             meta.cwd = meta.htdocs;
 
+            Env.set(opt.env);
             Packages.init(meta);
             this.parse();
 
             Packages.watch(meta, {
-                'options': options.packages,
+                'opt': opt.packages,
 
                 'change'() {
                     Watcher.log();
@@ -164,7 +169,7 @@ define('WebSite', function (require, module, exports) {
 
                 'done'() {
                     Masters.watch(meta, {
-                        'options': options.masters,
+                        'opt': opt.masters,
 
                         'done'() {
                             Log.allDone('全部编译完成');
@@ -179,7 +184,8 @@ define('WebSite', function (require, module, exports) {
 
         /**
         * 构建整个站点。
-        *   options = {
+        *   opt = {
+        *       env: 'prd',     //当前使用的环境名称。
         *       dir: '',        //构建整个站点的输出目录。
         *       excludes: [],   //构建前要排除在外的文件或目录，路径模式数组。
         *       cleans: [],     //构建完成后需要清理的文件或目录，路径模式数组。
@@ -199,29 +205,31 @@ define('WebSite', function (require, module, exports) {
         *       },
         *   };
         */
-        build(options = {}) {
+        build(opt = {}) {
             let meta = mapper.get(this);
-            let cwd = meta.cwd = options.dir;
+            let cwd = meta.cwd = opt.dir;
 
+            Env.set(opt.env);
             Resource.init(meta);
-            Resource.exclude(cwd, options.excludes);
+            Resource.exclude(cwd, opt.excludes);
 
+            
             Packages.init(meta);
-            Resource.process(cwd, options.process);
+            Resource.process(cwd, opt.process);
 
 
 
             this.parse();
 
             Packages.build(meta, {
-                'options': options.packages,
+                'opt': opt.packages,
 
                 'done'() {
                     Masters.build(meta, {
-                        'options': options.masters,
+                        'opt': opt.masters,
 
                         'done'() {
-                            Resource.clean(cwd, options.cleans);
+                            Resource.clean(cwd, opt.cleans);
                             Log.allDone('全部构建完成');
                             meta.emitter.fire('build');
                         },

@@ -66,6 +66,16 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
                     'delay': 0,
                 });
 
+                //转发事件。
+                block.on({
+                    'render': {
+                        'less-link': function (...args) {
+                            let values = meta.emitter.fire('render', 'less-link', args);
+                            return values.slice(-1)[0];
+                        },
+                    },
+                });
+
 
                 block.parse({
                     error(file) {
@@ -115,6 +125,7 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
                         let html = this.render({
                             'tabs': item.tabs,
                             'inline': item.inline,
+                            'md5': meta.md5.less,
                             'props': {},
                         });
 
@@ -170,11 +181,9 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
 
         },
 
-
-
         /**
         * 构建。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *       inline: false,      //是否内联。
         *       dest: '{md5}.css',  //输出的目标文件名。 支持 `{md5}` 模板字段。 
@@ -182,17 +191,17 @@ define('MasterPage/LessBlocks', function (require, module, exports) {
         *       query: {},          //生成到 href 属性中的 query 部分。
         *   };
         */
-        build(meta, options, done) {
+        build(meta, opt, done) {
             let tasker = new Tasker(meta.LessBlocks);
 
             tasker.on('each', function (item, index, done) {
                 item.block.build({
                     'tabs': item.tabs,
-                    'minify': options.minify,
-                    'inline': options.inline,
-                    'dest': options.dest,
-                    'props': options.props,
-                    'query': options.query,
+                    'minify': opt.minify,
+                    'inline': opt.inline,
+                    'dest': opt.dest,
+                    'props': opt.props,
+                    'query': opt.query,
 
                     'done'(html) {
                         Lines.replace(meta.lines, item.begin, item.end, html);

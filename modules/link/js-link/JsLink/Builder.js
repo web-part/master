@@ -68,7 +68,6 @@ define('JsLink/Builder', function (require, module, exports) {
             let file = item.file;
 
 
-
             //引用的是内部 min 版。
             //直接读取使用。
             if (item.min) {

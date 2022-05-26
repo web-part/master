@@ -40,11 +40,13 @@ module.exports = exports = {
     * @returns {WebSite} 返回一个 WebSite 实例。 
     */
     init() {
-        if (!website) {
-            const WebSite = App.require('WebSite');
-            website = new WebSite();
-            emitter.fire('init', [website]);  //先让外界有机会提前绑定事件。
+        if (website) {
+            return website;
         }
+
+        const WebSite = App.require('WebSite');
+        website = new WebSite();
+        emitter.fire('init', [website]);  //先让外界有机会提前绑定事件。
 
         return website;
     },
@@ -61,19 +63,31 @@ module.exports = exports = {
             defaults.name = pkg.name;
         }
 
+        //把 defaults 对象中的各个字段分解到由映射规则指定的模块中去设置。
+        //如 `htdocs: 'WebSite'`，表示 defaults 对象中的 `htdocs` 字段由模块 `WebSite` 去设置。
         Defaults.config(defaults, { //映射转换规则（路由规则）。
             htdocs: 'WebSite',
             edition: 'Edition',
             watcher: 'Watcher',
             metaProps: 'MetaProps',
             name: 'Watcher',            //用于监控完成后提示项目的名称。
-            less: 'LessLink',
+            env: 'Env',
            
             css: {
                 sample: 'Css',
                 regexp: 'CssLink',
+                md5: function (value) {
+                    Defaults.set('MasterPage', { md5: { 'css': value, }, });
+                },
                 dir: function (value) {
                     Defaults.set('WebSite', { 'css': value, });
+                },
+            },
+
+            less: {
+                regexp: 'LessLink',
+                md5: function (value) {
+                    Defaults.set('MasterPage', { md5: { 'less': value, }, });
                 },
             },
 
@@ -81,6 +95,9 @@ module.exports = exports = {
                 error: 'Js',
                 sample: 'Js',
                 regexp: 'JsLink',
+                md5: function (value) {
+                    Defaults.set('MasterPage', { md5: { 'js': value, }, });
+                },
             },
 
             html: {
@@ -88,6 +105,7 @@ module.exports = exports = {
                 changeDelay:'HtmlLink',
                 minify: 'Html',
             },
+
 
             tags: function (value) {
                 Defaults.set('MasterPage', { 'tags': value, });

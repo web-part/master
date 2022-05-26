@@ -14,8 +14,8 @@ define('BlockList', function (require, module, exports) {
         * 已重载 parse(lines, opt);   //传入一个行数组作为内容。
         * 已重载 parse(content, opt); //传入一个字符串作为内容。
         *   opt = {
-        *       begin: '',          //区块的开始标记。 如 `<!--master.less.begin-->`。
-        *       end: '',            //区块的结束标记。 如 `<!--master.less.end-->`。
+        *       begin: '',          //区块的开始标记。 如 `<!--webpart.less.begin-->`。
+        *       end: '',            //区块的结束标记。 如 `<!--webpart.less.end-->`。
         *       type: 'patterns',   //返回结果要解析成的数据类型。 如果指定为 `patterns` 或不指定，则解析成一个路径的模式数组。 
         *   };
         */
@@ -95,8 +95,8 @@ define('BlockList', function (require, module, exports) {
         * 参数:
         *   content: '',            //要替换的内容。
         *   opt = {
-        *       begin: '',          //区块的开始标记。 如 `<!--master.html.begin-->`。
-        *       end: '',            //区域的结束标记。 如 `<!--master.html.end-->`。
+        *       begin: '',          //区块的开始标记。 如 `<!--webpart.html.begin-->`。
+        *       end: '',            //区域的结束标记。 如 `<!--webpart.html.end-->`。
         *       value: '' || fn,    //要替换成的内容。
         *   };
         */

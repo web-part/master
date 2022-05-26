@@ -15,4 +15,13 @@ define('MasterPage.defaults', {
             end: '<!--master.js.end-->',
         },
     },
+
+    //生成 html 时添加到 href|src 中 query 部分的 md5 的长度。
+    //可取的值为 0 到 32，如果指定为 true，则等价于指定为 32;
+    //如果指定为 0 或 false，则不生成 md5 的 query 部分。
+    md5: {
+        css: 4,
+        less: 4,
+        js: 4,
+    },
 });

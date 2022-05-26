@@ -25,32 +25,32 @@ define('PackageBlock/Meta', function (require, module, exports) {
             let id = ID.next(module.parent.id);
 
             let meta = {
-                'id': id,                           //实例 id。
-                'htdocs': htdocs,                   //网站的根目录。
-                'css': config.css,                  //样式目录，相对于网站根目录。
-                'patterns': patterns,               //路径模式。
+                'id': id,               //实例 id。
+                'htdocs': htdocs,       //网站的根目录。
+                'css': config.css,      //样式目录，相对于网站根目录。
+                'patterns': patterns,   //路径模式。
 
                 'dest': {
                     'file': htdocs + dest.file,
                     'dir': htdocs + dest.dir,
                 },
 
-                'this': null,                       //方便内部引用自身的实例。
-                'emitter': null,                    //事件驱动器。
-                'watcher': null,                    //Watcher 实例。
+                'this': null,           //方便内部引用自身的实例。
+                'emitter': null,        //事件驱动器。
+                'watcher': null,        //Watcher 实例。
 
-                'list': [],                         // item = { file, pack, isOld, key$output, output, info, };
-                'file$item': {},                    //文件名对应的 list 中的 item。   
+                'list': [],             // item = { file, pack, isOld, key$output, output, info, };
+                'file$item': {},        //文件名对应的 list 中的 item。   
 
-                'type$patterns': {                  //各个分包按类型合并后的路径模式。
+                'type$patterns': {      //各个分包按类型合并后的路径模式。
                     'less': [],
                     'html': [],
                     'js': [],
                 },
 
-                'old': {                            //重新解析前对一些字段的备份。
-                    'file$item': {},                //文件名对应的 list 中的 item。   
-                    'type$patterns': {              //各个分包按类型合并后的路径模式。
+                'old': {                //重新解析前对一些字段的备份。
+                    'file$item': {},    //文件名对应的 list 中的 item。   
+                    'type$patterns': {  //各个分包按类型合并后的路径模式。
                         'less': [],
                         'html': [],
                         'js': [],

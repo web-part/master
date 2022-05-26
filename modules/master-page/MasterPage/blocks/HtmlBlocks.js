@@ -23,8 +23,6 @@ define('MasterPage/HtmlBlocks', function (require, module, exports) {
 
             let list = BlockList.parse(meta.lines, meta.tags.html);
 
-            //console.log(list);
-
             list.forEach((item) => {
                 let file = item.patterns.join();    //把整个路径模式看作一个整体。
                 let block = old$block[file];

@@ -28,10 +28,10 @@ define('WebSite/Masters', function (require, module, exports) {
         * @returns {MasterBlock} 解析成功后返回一个 MasterBlock 实例；否则返回 null。
         */
         parse(meta, config) {
-            let options = meta.masters;
+            let opt = meta.masters;
 
             //无配置或配置中指定禁用了。
-            if (!options || !options.enabled) {
+            if (!opt || !opt.enabled) {
                 return null;
             }
 
@@ -39,10 +39,8 @@ define('WebSite/Masters', function (require, module, exports) {
             let block = new MasterBlock({
                 'htdocs': meta.cwd,
                 'css': meta.css,
-
-                'patterns': options.patterns,
-                'dest': options.dest,
-
+                'patterns': opt.patterns,
+                'dest': opt.dest,
                 'excludes': config.excludes,
             });
 
@@ -57,6 +55,14 @@ define('WebSite/Masters', function (require, module, exports) {
                 'render': {
                     'master': function (...args) {
                         let values = meta.emitter.fire('render', 'master', args);
+                        return values.slice(-1)[0]; //返回最后一个回调函数的值。
+                    },
+                    'css-link': function (...args) {
+                        let values = meta.emitter.fire('render', 'css-link', args);
+                        return values.slice(-1)[0]; //返回最后一个回调函数的值。
+                    },
+                    'less-link': function (...args) {
+                        let values = meta.emitter.fire('render', 'less-link', args);
                         return values.slice(-1)[0]; //返回最后一个回调函数的值。
                     },
                     'js-link': function (...args) {
@@ -81,7 +87,7 @@ define('WebSite/Masters', function (require, module, exports) {
         /**
         * 编译所有母版页。
         *   config = {
-        *       options: {
+        *       opt: {
         *           minify: false,      //是否压缩。
         *       },
         *       done: fn,               //编译及监控完成后要执行的回调函数。
@@ -89,10 +95,10 @@ define('WebSite/Masters', function (require, module, exports) {
         */
         compile(meta, config) {
             let block = meta.MasterBlock;
-            let options = config.options;
+            let opt = config.opt;
             let done = config.done;
 
-            if (!block || !options) {
+            if (!block || !opt) {
                 return done();
             }
 
@@ -112,7 +118,7 @@ define('WebSite/Masters', function (require, module, exports) {
             });
 
             block.compile({
-                'minify': options.minify,
+                'minify': opt.minify,
                 //'done'() {}, //不指定 done，则会触发 ('compile', 'master', 'all') 事件。
             });
 
@@ -121,7 +127,7 @@ define('WebSite/Masters', function (require, module, exports) {
         /**
         * 编译所有母版页，完成后开启监控。
         *   config = {
-        *       options: {
+        *       opt: {
         *           minify: false,      //是否压缩。
         *       },
         *       done: fn,               //编译及监控完成后要执行的回调函数。
@@ -129,17 +135,17 @@ define('WebSite/Masters', function (require, module, exports) {
         */
         watch(meta, config) {
             let block = meta.MasterBlock;
-            let options = config.options;
+            let opt = config.opt;
             let done = config.done;
 
-            if (!block || !options) {
+            if (!block || !opt) {
                 return done();
             }
 
 
             block.on('change', function () {
                 this.compile({
-                    'minify': options.minify,
+                    'minify': opt.minify,
                     'done'() { //指定了 done，则不会触发 ('compile', 'master', 'all') 事件。
                         Watcher.log();
                     },
@@ -164,7 +170,7 @@ define('WebSite/Masters', function (require, module, exports) {
             });
 
             block.compile({
-                'minify': options.minify,
+                'minify': opt.minify,
                 //'done'() {}, //不指定 done，则会触发 ('compile', 'master', 'all') 事件。
             });
 
@@ -173,7 +179,7 @@ define('WebSite/Masters', function (require, module, exports) {
         /**
         * 构建所有母版页。
         *   config = {
-        *       options: {
+        *       opt: {
         *           lessLink: {},
         *           lessBlock: {},  
         *           jsBlock: {},
@@ -184,16 +190,16 @@ define('WebSite/Masters', function (require, module, exports) {
         */
         build(meta, config) {
             let block = meta.MasterBlock;
-            let options = config.options;
+            let opt = config.opt;
             let done = config.done;
 
-            if (!block || !options) {
+            if (!block || !opt) {
                 return done();
             }
 
 
-            let lessBlock = LessBlock.normalize(meta, options.lessBlock);
-            let jsBlock = JsBlock.normalize(meta, options.jsBlock);
+            let lessBlock = LessBlock.normalize(meta, opt.lessBlock);
+            let jsBlock = JsBlock.normalize(meta, opt.jsBlock);
 
             block.on('build', 'master', {
                 'before': function (item) {
@@ -212,10 +218,10 @@ define('WebSite/Masters', function (require, module, exports) {
 
 
             block.build({
-                'lessLink': options.lessLink,
+                'lessLink': opt.lessLink,
                 'lessBlock': lessBlock,
                 'jsBlock': jsBlock,
-                'html': options.html,
+                'html': opt.html,
             });
 
         },

@@ -30,7 +30,7 @@ define('PackageBlock/Parser', function (require, module, exports) {
                     'isOld': false,     //
                     'file': file,       //
                     'pack': null,       //Package 实例。
-                    'key$output': {},   //针对编译中不同的 options 的缓存结果。 key = JSON.string(options);
+                    'key$output': {},   //针对编译中不同的 opt 的缓存结果。 key = JSON.string(opt);
                     'output': null,     //缓存最近一次 pack.compile() 的编译结果。
                     'info': {},         //缓存 pack.parse() 的输出结果。
                 };
@@ -76,6 +76,12 @@ define('PackageBlock/Parser', function (require, module, exports) {
                         },
                         'js-block': function (...args) {
                             let values = meta.emitter.fire('compile', 'js-block', args);
+                            return values.slice(-1)[0];
+                        },
+                    },
+                    'concat': {
+                        'js-block': function (...args) {
+                            let values = meta.emitter.fire('concat', 'js-block', args);
                             return values.slice(-1)[0];
                         },
                     },

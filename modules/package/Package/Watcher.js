@@ -12,19 +12,19 @@ define('Package/Watcher', function (require, module, exports) {
     return {
         /**
         * 
-        *   options = {
+        *   opt = {
         *       compare: fn,
         *       LessBlock: Module,
         *       HtmlBlock: Module,
         *       JsBlock: Module,
         *    };
         */
-        create(meta, options) {
+        create(meta, opt) {
             let watcher = new Watcher(meta.file);
 
             //包的内容发生了变化。
             watcher.on('modify', function () {
-                let info = options.compare();
+                let info = opt.compare();
 
                 if (!info) {
                     console.log('包的实质内容没有发生变化。'.yellow);
@@ -41,17 +41,17 @@ define('Package/Watcher', function (require, module, exports) {
                 //新建的。
                 if (meta.LessBlock !== old.LessBlock) {
                     old.LessBlock && old.LessBlock.destroy();
-                    options.LessBlock.watch(meta);
+                    opt.LessBlock.watch(meta);
                 }
 
                 if (meta.HtmlBlock !== old.HtmlBlock) {
                     old.HtmlBlock && old.HtmlBlock.destroy();
-                    options.HtmlBlock.watch(meta);
+                    opt.HtmlBlock.watch(meta);
                 }
 
                 if (meta.JsBlock !== old.JsBlock) {
                     old.JsBlock && old.JsBlock.destroy();
-                    options.JsBlock.watch(meta);
+                    opt.JsBlock.watch(meta);
                 }
 
                 old.LessBlock = null;

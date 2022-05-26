@@ -125,14 +125,21 @@ define('HtmlLink', function (require, module, exports) {
         /**
         * 渲染生成 html。
         * 把对 html 分文件的引用用所对应的内容替换掉。
-        *   options = {
+        *   opt = {
         *       tabs: 0,    //缩进的空格数。
         *   };
         */
-        render(options = {}) {
+        render(opt = {}) {
             let meta = mapper.get(this);
-            let tabs = options.tabs || 0;
-            let key = JSON.stringify(options);
+
+            //不符合当前设定的环境，则不生成 html 内容。
+            //明确返回 null，可以删除该行内容，而不是生成一个空行。
+            if (!meta.isEnvOK) {
+                return null;
+            }
+
+            let tabs = opt.tabs || 0;
+            let key = JSON.stringify(opt);
             let html = meta.key$output[key];
 
             //优先使用缓存。
@@ -181,6 +188,11 @@ define('HtmlLink', function (require, module, exports) {
         watch() {
             let meta = mapper.get(this);
 
+            if (!meta.isEnvOK) {
+                return;
+            }
+
+           
             meta.watcher = meta.watcher || Watcher.create(meta);
 
             meta.list.map((item, index) => {

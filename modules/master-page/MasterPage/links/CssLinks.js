@@ -60,11 +60,34 @@ define('MasterPage/CssLinks', function (require, module, exports) {
                     throw new Error();
                 }
 
-                let link = file$link[file] || new CssLink({
+                let link = item.link = file$link[file];
+
+                if (link) {
+                    return;
+                }
+
+
+                link = item.link = file$link[file] = new CssLink({
                     'file': item.file,
                 });
 
-                item.link = file$link[file] = link;
+                link.on({
+                    'render': function (file, html, data) {
+                        //增加些字段。
+                        Object.assign(data, {
+                            'dir': meta.dir,
+                            'link': link,
+                            'item': item,   // item 不为空，说明是静态 <link> 方式的。
+                        });
+
+                        let args = [...arguments];
+                        let values = meta.emitter.fire('render', 'css-link', args);
+
+                        return values.slice(-1)[0];
+                    },
+                });
+
+                
             });
 
             //释放备份中没有复用到的实例。
@@ -90,7 +113,7 @@ define('MasterPage/CssLinks', function (require, module, exports) {
                     'inline': item.inline,
                     'tabs': item.tabs,
                     'href': item.href,
-                    'md5': 4,
+                    'md5': meta.md5.css,
                     'props': item.props,
                     'query': {},
                 });

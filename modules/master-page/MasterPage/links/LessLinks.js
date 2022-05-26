@@ -63,11 +63,33 @@ define('MasterPage/LessLinks', function (require, module, exports) {
                     throw new Error();
                 }
 
-                let link = file$link[file] || new LessLink({
+                let link = item.link = file$link[file];
+
+                if (link) {
+                    return;
+                }
+
+
+                link = item.link = file$link[file] = new LessLink({
                     'file': file,
                 });
 
-                item.link = file$link[file] = link;
+                link.on({
+                    'render': function (file, html, data) {
+                        //增加些字段。
+                        Object.assign(data, {
+                            'dir': meta.dir,
+                            'link': link,
+                            'item': item,   // item 不为空，说明是静态 <link> 方式的。
+                        });
+
+                        let args = [...arguments];
+                        let values = meta.emitter.fire('render', 'less-link', args);
+
+                        return values.slice(-1)[0];
+                    },
+                });
+
             });
 
             //释放备份中没有复用到的实例。
@@ -102,7 +124,7 @@ define('MasterPage/LessLinks', function (require, module, exports) {
                             'props': item.props,
                             'inline': item.inline,
                             'href': item.dest.href,
-                            'md5': 4,
+                            'md5': meta.md5.less,
                         });
 
                         item.output = html;
@@ -166,20 +188,20 @@ define('MasterPage/LessLinks', function (require, module, exports) {
 
         /**
         * 构建。
-        *   options = {
+        *   opt = {
         *       minify: true,       //是否压缩。
         *       name: '',           //输出的目标文件名，不包含目录部分。 支持两个模板字段 `{name}`、`{md5}`。 
         *       md5: 4,             //添加到 href 中 query 部分的 md5 的长度。
         *       query: null || fn,  //添加到 href 中 query 部分。
         *   };
         */
-        build(meta, options, done) {
+        build(meta, opt, done) {
             let tasker = new Tasker(meta.LessLinks);
 
             tasker.on('each', function (item, index, done) {
                 let dest = '';
                 let href = '';
-                let name = options.name;
+                let name = opt.name;
 
                 if (name) {
                     name = $String.format(name, { 'name': item.dest.name, });
@@ -188,9 +210,9 @@ define('MasterPage/LessLinks', function (require, module, exports) {
                 }
 
                 item.link.build({
-                    'minify': options.minify,
-                    'query': options.query,
-                    'md5': options.md5,
+                    'minify': opt.minify,
+                    'query': opt.query,
+                    'md5': opt.md5,
                     'dest': dest,
                     'href': href,
                     'tabs': item.tabs,

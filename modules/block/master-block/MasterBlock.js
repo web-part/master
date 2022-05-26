@@ -24,7 +24,7 @@ define('MasterBlock', function (require, module, exports) {
     class MasterBlock {
         /**
         * 构造器。
-        *   options = {
+        *   opt = {
         *       patterns: [],   //路径模式列表。
         *       excludes: {},   //用于传递给 MasterPage 实例。 要排除的路径模式。
         *       htdocs: '',     //用于传递给 MasterPage 实例。 网站的根目录。 如 `htdocs/`。
@@ -92,7 +92,7 @@ define('MasterBlock', function (require, module, exports) {
 
         /**
         * 编译。
-        *   options = {
+        *   opt = {
         *       minify: false,      //是否压缩。
         *
         *       //可选。 编译完成后要执行的回函数。
@@ -100,11 +100,11 @@ define('MasterBlock', function (require, module, exports) {
         *       done: fn,
         *   };
         */
-        compile(options = {}) {
-            let done = typeof options == 'function' ? options : options.done;
+        compile(opt = {}) {
+            let done = typeof opt == 'function' ? opt : opt.done;
             let meta = mapper.get(this);
             let tasker = new Tasker(meta.list);
-            let key = JSON.stringify(options);  //缓存用的 key 与 options 有关。
+            let key = JSON.stringify(opt);  //缓存用的 key 与 opt 有关。
 
             tasker.on('each', function (item, index, done) {
                 let output = item.key$output[key];
@@ -118,7 +118,7 @@ define('MasterBlock', function (require, module, exports) {
                 meta.emitter.fire('compile', 'master', 'before', [item]);
 
                 item.master.compile({
-                    'minify': options.minify,
+                    'minify': opt.minify,
 
                     'done': function () {
                         item.key$output[key] = true;
@@ -174,14 +174,14 @@ define('MasterBlock', function (require, module, exports) {
 
         /**
         * 构建。
-        *   options = {
+        *   opt = {
         *       lessLink: {},
         *       lessBlock: {},
         *       jsBlock: {},
         *       html: {},
         *   };
         */
-        build(options) {
+        build(opt) {
             let meta = mapper.get(this);
 
             //并行处理任务。
@@ -193,10 +193,10 @@ define('MasterBlock', function (require, module, exports) {
                 meta.emitter.fire('build', 'master', 'before', [item]);
 
                 master.build({
-                    'lessLink': options.lessLink,
-                    'lessBlock': options.lessBlock,
-                    'jsBlock': options.jsBlock,
-                    'html': options.html,
+                    'lessLink': opt.lessLink,
+                    'lessBlock': opt.lessBlock,
+                    'jsBlock': opt.jsBlock,
+                    'html': opt.html,
 
                     'done'() {
                         meta.emitter.fire('build', 'master', 'done', [item]);

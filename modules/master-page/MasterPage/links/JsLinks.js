@@ -30,7 +30,6 @@ define('MasterPage/JsLinks', function (require, module, exports) {
 
 
             list.forEach((item) => {
-
                 let file = item.file;
                 let link = old$link[file];
 
@@ -70,7 +69,7 @@ define('MasterPage/JsLinks', function (require, module, exports) {
 
 
 
-                link = new JsLink({
+                link = item.link = file$link[file] = new JsLink({
                     'file': item.file,
                 });
 
@@ -90,7 +89,6 @@ define('MasterPage/JsLinks', function (require, module, exports) {
                     },
                 });
 
-                item.link = file$link[file] = link;
             });
 
             //释放备份中没有复用到的实例。
@@ -146,11 +144,13 @@ define('MasterPage/JsLinks', function (require, module, exports) {
         */
         render(meta, done) {
             meta.JsLinks.forEach((item) => {
+                
+
                 let html = item.link.render({
                     'inline': item.inline,
                     'tabs': item.tabs,
                     'href': item.href,
-                    'md5': 4,
+                    'md5': meta.md5.js,
                     'props': item.props,
                     'query': {},
                 });

@@ -27,7 +27,7 @@ define('MasterBlock/Parser', function (require, module, exports) {
                     'file': file,
                     'master': null,
                     'isOld': false,
-                    'key$output': {},   //针对编译中不同的 options 的缓存结果。 key = JSON.string(options);
+                    'key$output': {},   //针对编译中不同的 opt 的缓存结果。 key = JSON.string(opt);
                     'output': null,     //缓存最近一次的编译结果。
                 };
             });
@@ -81,6 +81,14 @@ define('MasterBlock/Parser', function (require, module, exports) {
                     'render': {
                         'master': function (...args) {
                             let values = meta.emitter.fire('render', 'master', args);
+                            return values.slice(-1)[0];
+                        },
+                        'css-link': function (...args) {
+                            let values = meta.emitter.fire('render', 'css-link', args);
+                            return values.slice(-1)[0];
+                        },
+                        'less-link': function (...args) {
+                            let values = meta.emitter.fire('render', 'less-link', args);
                             return values.slice(-1)[0];
                         },
                         'js-link': function (...args) {

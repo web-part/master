@@ -11,7 +11,7 @@ define('HtmlLink/Tabs', function (require, module, exports) {
     return {
         /**
         * 把指定的内容用配对的特殊开始标记和结束标记包裹起来，以便后续进一步处理。
-        *   options = {
+        *   opt = {
         *       content: '',    //必选。 要包裹的 html 内容。
         *       origin: 0,      //必选。 内容原始的缩进空格数。
         *       target: 0,      //必选。 被包裹的内容在后续需要缩进的空格数。
@@ -22,18 +22,17 @@ define('HtmlLink/Tabs', function (require, module, exports) {
         *           AAAAAAAAAAAA
         *           BBBBBBBBBBBBBBBBB
         *           CCCCCCCCCCCC
-
         * 给处理后为：
-        *           <!--weber.tabs.begin=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
+        *           <!--webpart.tabs.begin=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
         *           AAAAAAAAAAAA
         *           BBBBBBBBBBBBBBBBB
         *           CCCCCCCCCCCC
-        *           <!--weber.tabs.end=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
+        *           <!--webpart.tabs.end=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
         */
-        wrap(options) {
-            let { origin, target, content, file, } = options;
+        wrap(opt) {
+            let { origin, target, content, file, } = opt;
             let token = $String.random(32);
-            let sample = '<!--weber.tabs.{type}={target}|{token}|{file}-->';
+            let sample = '<!--webpart.tabs.{type}={target}|{token}|{file}-->';
 
             //生成开始标记。
             let begin = $String.format(sample, {
@@ -65,19 +64,19 @@ define('HtmlLink/Tabs', function (require, module, exports) {
         * 从指定的内容中分析出配对的特殊的开始标记、结束标记和缩进的空格数，
         * 并将内容进行缩进和替换处理，配对的标记将会给删除掉。
         * 如输入内容为：
-        *           <!--weber.tabs.begin=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
+        *           <!--webpart.tabs.begin=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
         *           AAAAAAAAAAAA
         *           BBBBBBBBBBBBBBBBB
         *           CCCCCCCCCCCC
-        *           <!--weber.tabs.end=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
+        *           <!--webpart.tabs.end=4|315C451F8ECB58AB16C52BD80EDC1E9D|htdocs/views/add/textarea.html-->
         * 则处理后为：
         *   AAAAAAAAAAAA
         *   BBBBBBBBBBBBBBBBB
         *   CCCCCCCCCCCC
         */
         replace(content) {
-            let regexp = /<!--weber.tabs.begin=.+/ig;
-            let beginIndex = '<!--weber.tabs.begin='.length;
+            let regexp = /<!--webpart.tabs.begin=.+/ig;
+            let beginIndex = '<!--webpart.tabs.begin='.length;
             let endIndex = 0 - '-->'.length;
 
             let list = content.match(regexp) || [];
@@ -85,7 +84,7 @@ define('HtmlLink/Tabs', function (require, module, exports) {
 
             list.forEach((beginTag) => {
                 let value = beginTag.slice(beginIndex, endIndex);
-                let endTag = `<!--weber.tabs.end=${value}-->`;
+                let endTag = `<!--webpart.tabs.end=${value}-->`;
 
                 let items = beginTag.split('|');
                 let target = items[0].slice(beginIndex);

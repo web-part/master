@@ -32,20 +32,18 @@ define('LessLink/Parser/Dest', function (require, module, exports) {
     return {
         /**
         * 根据网站的根目录、当前页面的目录和 less 文件名，计算出目标 css 文件的路径等信息。
-        *   options = {
+        *   opt = {
         *       htdocs: '',     //网站的根目录，如 `htdocs/`。
         *       dir: '',        //less 标签里的 href 属性相对的目录，即要解析的页面所在的目录，如 `htdocs/html/test/`。
         *       css: '',        //网站的样式目录，相对于网站根目录，如 `style/css/`。
         *       file: '',       //less 文件路径，如 `htdocs/html/test/view.less`。
         *   };
         */
-        get(options) {
-            let htdocs = options.htdocs;
-            let dir = options.dir;
-            let file = options.file;
-            let cssDir = htdocs + options.css;     // css 目录完整路径。
-
-
+        get(opt) {
+            let htdocs = opt.htdocs;
+            let dir = opt.dir;
+            let file = opt.file;
+            let cssDir = htdocs + opt.css;     // css 目录完整路径。
 
             let name = getName(htdocs, file);
             let hrefDir = Path.relative(dir, cssDir) + '/';  //href 属性中使用的相对目录。
