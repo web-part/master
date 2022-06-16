@@ -104,7 +104,7 @@ define('WebSite/Resource', function (require, module, exports) {
                         deletes.push(file);
                     }
                     else {
-                        File.write(file, value, null);
+                        File.write(file, value);
                         converts.push(file);
                     }
                 });
