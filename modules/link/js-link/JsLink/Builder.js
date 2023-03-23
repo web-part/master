@@ -119,10 +119,12 @@ define('JsLink/Builder', function (require, module, exports) {
                 let html = '';
 
                 if (item.inline) {
+                    let props = MetaProps.delete(item.props);
+
                     html = Js.inline({
                         'content': content,
                         'tabs': item.tabs,
-                        'props': item.props,
+                        'props': props,
                     });
                 }
                 else {
@@ -132,7 +134,6 @@ define('JsLink/Builder', function (require, module, exports) {
 
                 done(html);
             }
-
            
         },
     };
