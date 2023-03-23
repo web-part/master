@@ -7,18 +7,18 @@ define('JsLink/Builder', function (require, module, exports) {
     const File = require('@definejs/file');
     const MD5 = require('@definejs/md5');
     
+    const MetaProps = require('MetaProps');
     const Js = require('Js');
     const Edition = require('Edition');
 
 
     //生成引用内部或外部资源的 `<script>` 标签。
     function render(item, md5) {
-        let href = item.href;
-        let props = Object.assign({}, item.props);
+        let { href, props, debug, tabs, query, } = item;
 
-        delete props['data-meta'];
+        props = MetaProps.delete(props);
 
-        if (item.debug) {
+        if (debug) {
             href = Edition.toMin(href);
         }
 
@@ -27,10 +27,10 @@ define('JsLink/Builder', function (require, module, exports) {
         }
 
         let html = Js.mix({
-            'href': href,
-            'props': props,
-            'tabs': item.tabs,
-            'query': item.query,
+            href,
+            props,
+            tabs,
+            query,
         });
 
         return html;
