@@ -7,6 +7,7 @@ define('CssLink/Builder', function (require, module, exports) {
     const File = require('@definejs/file');
     const MD5 = require('@definejs/md5');
 
+    const MetaProps = require('MetaProps');
     const Css = require('Css');
     const Edition = require('Edition');
 
@@ -77,12 +78,13 @@ define('CssLink/Builder', function (require, module, exports) {
             //内部公共方法
             function mix(content) {
                 let html = '';
+                let props = MetaProps.delete(item.props);
 
                 if (item.inline) {
                     html = Css.inline({
                         'content': content,
                         'tabs': item.tabs,
-                        'props': item.props,
+                        'props': props,
                     });
                 }
                 else {
@@ -97,7 +99,7 @@ define('CssLink/Builder', function (require, module, exports) {
                     html = Css.mix({
                         'href': dest,
                         'tabs': item.tabs,
-                        'props': item.props,
+                        'props': props,
                         'query': item.query,
                     });
                 }
