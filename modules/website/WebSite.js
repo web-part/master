@@ -93,6 +93,8 @@ define('WebSite', function (require, module, exports) {
         * 编译整个站点。
         * 已重载 compile(opt);    //传入一个配置对象。
         *   opt = {
+        *       env: 'dev',             //当前使用的环境名称。
+        * 
         *       packages: {             //可选，针对 packages 的配置节点。
         *           minify: false,      //是否压缩。
         *           name: '{name}',     //输出的文件名，支持 `{name}`: 当前的包名、`{md5}`: 内容的 md5 值两个模板字段。
@@ -111,13 +113,14 @@ define('WebSite', function (require, module, exports) {
             //设置当前的工作目录。
             meta.cwd = meta.htdocs;
 
+            Env.set(opt.env);
             Packages.init(meta);
             this.parse();
 
             //此处可以共用 Packages.build()。
             Packages.build(meta, {
                 'opt': opt.packages,
-              
+
                 'done'() {
                     Masters.compile(meta, {
                         'opt': opt.masters,

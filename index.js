@@ -2,6 +2,7 @@
 require('colors');
 
 const console = require('@webpart/console');
+const $Object = require('@definejs/object');
 const File = require('@definejs/file');
 const Emitter = require('@definejs/emitter');
 const Timer = require('@definejs/timer');
@@ -22,6 +23,8 @@ let website = null;
 
 
 module.exports = exports = {
+
+    defaults: require('./defaults'),
 
     /**
     * 
@@ -55,7 +58,9 @@ module.exports = exports = {
     * 设置默认配置。
     */
     config(defaults) {
-        let Defaults = App.require('Defaults');
+        const Defaults = App.require('Defaults');
+
+        defaults = $Object.deepAssign({}, exports.defaults, defaults);
 
         //如果未指定应用的名称，则从包中读取。
         if (!defaults.name) {
